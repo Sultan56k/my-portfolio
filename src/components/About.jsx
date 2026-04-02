@@ -1,14 +1,60 @@
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useInView, animate } from 'framer-motion';
+import { useRef, useEffect, useState } from 'react';
+
+function AnimatedCounter({ target, suffix = '', duration = 2 }) {
+    const [count, setCount] = useState(0);
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+    useEffect(() => {
+        if (!isInView) return;
+        if (typeof target !== 'number') return;
+        const controls = animate(0, target, {
+            duration,
+            ease: 'easeOut',
+            onUpdate: (v) => setCount(Math.round(v)),
+        });
+        return () => controls.stop();
+    }, [isInView, target, duration]);
+
+    if (typeof target !== 'number') {
+        return <span ref={ref}>{target}</span>;
+    }
+
+    return <span ref={ref}>{count}{suffix}</span>;
+}
+
+const stats = [
+    { value: 1, suffix: '+', label: 'Years Exp', gradient: 'from-white to-[#6366f1]' },
+    { value: 10, suffix: '+', label: 'Projects', gradient: 'from-white to-[#22d3ee]' },
+    { value: 'CS', suffix: '', label: 'Major', gradient: 'from-white to-[#a855f7]' },
+    { value: 100, suffix: '%', label: 'Committed', gradient: 'from-white to-[#6366f1]' },
+];
+
+const tags = ['Clean Code', 'Performance', 'UI/UX Design', 'Problem Solving'];
 
 export default function About() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-    return (
-        <section id="about" className="section-wrapper bg-[#0b0b0f]">
-            <div className="section-container">
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
 
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+    };
+
+    return (
+        <section id="about" className="section-wrapper bg-[#0b0b0f] relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#6366f1]/5 rounded-full blur-[100px] -z-10" />
+
+            <div className="section-container">
                 {/* Header */}
                 <motion.div
                     ref={ref}
@@ -17,22 +63,23 @@ export default function About() {
                     className="section-header"
                 >
                     <span className="section-subtitle">About Me</span>
-                    <p className="section-description text-center">
+                    <h2 className="type-h2 text-white">Who I Am</h2>
+                    <div className="section-divider mt-2" />
+                    <p className="section-description text-center mt-4">
                         Bridging the gap between conceptual design and technical implementation.
                     </p>
                 </motion.div>
 
                 {/* Content */}
                 <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-start">
-
                     {/* Text Content */}
                     <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ delay: 0.2 }}
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate={isInView ? 'visible' : 'hidden'}
                         className="space-y-6"
                     >
-                        <div className="space-y-4 text-[#d4d4dc] text-base leading-relaxed">
+                        <motion.div variants={itemVariants} className="space-y-4 text-[#d4d4dc] text-base leading-relaxed">
                             <p>
                                 I am a final-year Computer Science student and a passionate developer specializing in the <strong className="text-white">React ecosystem</strong>. My journey started with a curiosity for how things work on the web, which quickly evolved into a career building professional applications.
                             </p>
@@ -42,40 +89,45 @@ export default function About() {
                             <p>
                                 I don't just write code; I build solutions that users enjoy interacting with.
                             </p>
-                        </div>
+                        </motion.div>
 
-                        <div className="flex flex-wrap gap-2 pt-2">
-                            {['Clean Code', 'Performance', 'UI/UX Design', 'Problem Solving'].map((tag, i) => (
-                                <span key={i} className="tag">{tag}</span>
+                        <motion.div variants={itemVariants} className="flex flex-wrap gap-2 pt-2">
+                            {tags.map((tag, i) => (
+                                <motion.span
+                                    key={i}
+                                    className="tag"
+                                    whileHover={{ scale: 1.05, y: -2 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    {tag}
+                                </motion.span>
                             ))}
-                        </div>
+                        </motion.div>
                     </motion.div>
 
                     {/* Stats Grid */}
                     <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ delay: 0.3 }}
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate={isInView ? 'visible' : 'hidden'}
                         className="grid grid-cols-2 gap-4 md:gap-6"
                     >
-                        <div className="card-base card-glow bg-[#13131a] text-center justify-center py-8">
-                            <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-[#6366f1] mb-1">1+</span>
-                            <span className="text-xs font-semibold text-[#9898a8] uppercase tracking-wider">Years Exp</span>
-                        </div>
-                        <div className="card-base card-glow bg-[#13131a] text-center justify-center py-8">
-                            <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-[#22d3ee] mb-1">10+</span>
-                            <span className="text-xs font-semibold text-[#9898a8] uppercase tracking-wider">Projects</span>
-                        </div>
-                        <div className="card-base card-glow bg-[#13131a] text-center justify-center py-8">
-                            <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-[#a855f7] mb-1">CS</span>
-                            <span className="text-xs font-semibold text-[#9898a8] uppercase tracking-wider">Major</span>
-                        </div>
-                        <div className="card-base card-glow bg-[#13131a] text-center justify-center py-8">
-                            <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-[#6366f1] mb-1">100%</span>
-                            <span className="text-xs font-semibold text-[#9898a8] uppercase tracking-wider">Commited</span>
-                        </div>
+                        {stats.map((stat, i) => (
+                            <motion.div
+                                key={i}
+                                variants={itemVariants}
+                                className="card-base card-glow card-inner-glow bg-[#13131a] text-center justify-center py-8 group"
+                                whileHover={{ scale: 1.03 }}
+                            >
+                                <span className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br ${stat.gradient} mb-1 block`}>
+                                    <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                                </span>
+                                <span className="text-xs font-semibold text-[#9898a8] uppercase tracking-wider group-hover:text-[#c4c4cc] transition-colors">
+                                    {stat.label}
+                                </span>
+                            </motion.div>
+                        ))}
                     </motion.div>
-
                 </div>
             </div>
         </section>

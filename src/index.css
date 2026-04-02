@@ -14,9 +14,7 @@
   /* Typography Colors - High Contrast for WCAG AA */
   --color-text-primary: #ffffff;
   --color-text-secondary: #e2e2e8;
-  /* Lightened from #d4d4dc for better contrast */
   --color-text-muted: #aeb0be;
-  /* Lightened from #9898a8 for better contrast */
   --color-text-accent: #6366f1;
 
   /* Accent Colors */
@@ -50,6 +48,11 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 body {
@@ -231,7 +234,7 @@ body {
 }
 
 .card-glow {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, box-shadow;
 }
 
@@ -443,15 +446,15 @@ textarea:focus {
   .type-h1 {
     font-size: 2.25rem;
   }
-  
+
   .type-h2 {
     font-size: 1.875rem;
   }
-  
+
   .type-h3 {
     font-size: 1.25rem;
   }
-  
+
   .section-description {
     font-size: 0.9375rem;
   }
@@ -500,4 +503,289 @@ textarea {
   .noise-bg::before {
     display: none;
   }
+}
+
+/* ============================
+   ENHANCED ANIMATIONS & EFFECTS
+   ============================ */
+
+/* Animated Gradient Border */
+.gradient-border {
+  position: relative;
+  border: none !important;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    var(--gradient-angle, 0deg),
+    #6366f1,
+    #a855f7,
+    #22d3ee,
+    #6366f1
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  animation: rotateGradient 4s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateGradient {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glow Pulse */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
+  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), 0 0 60px rgba(99, 102, 241, 0.1); }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 0.8s ease-in-out infinite;
+}
+
+/* Morphing blob for backgrounds */
+@keyframes morph {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+}
+
+.animate-morph {
+  animation: morph 8s ease-in-out infinite;
+}
+
+/* Text gradient animation */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+}
+
+/* Enhanced card hover with inner glow */
+.card-inner-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-inner-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(99, 102, 241, 0.06) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.card-inner-glow:hover::after {
+  opacity: 1;
+}
+
+/* Section divider line */
+.section-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+/* Project Card Styles */
+.project-card-wrapper {
+  will-change: transform;
+}
+
+.project-card {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+}
+
+.project-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  background-color: var(--color-bg-card-hover);
+  box-shadow:
+    0 20px 60px -15px rgba(0, 0, 0, 0.5),
+    0 0 30px -10px rgba(99, 102, 241, 0.15);
+}
+
+@keyframes cardBreath {
+  0%, 100% {
+    box-shadow: 0 0 0px rgba(99, 102, 241, 0);
+  }
+  50% {
+    box-shadow: 0 4px 20px -8px rgba(99, 102, 241, 0.08);
+  }
+}
+
+.project-card-wrapper {
+  animation: cardBreath 4s ease-in-out infinite;
+}
+
+.project-card-wrapper:hover {
+  animation: none;
+}
+
+/* Custom cursor - hide default on desktop */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  a, button, input, textarea, select {
+    cursor: none;
+  }
+}
+
+/* Smooth section separator */
+.section-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+  width: 100%;
+}
+
+/* Glass morphism card variant */
+.glass-card {
+  background: rgba(19, 19, 26, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(42, 42, 58, 0.5);
+}
+
+/* Spotlight effect for mouse tracking */
+.spotlight-card {
+  --spotlight-x: 50%;
+  --spotlight-y: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    800px circle at var(--spotlight-x) var(--spotlight-y),
+    rgba(99, 102, 241, 0.06),
+    transparent 40%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: 1;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* Gradient line animation */
+@keyframes lineSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-line-slide {
+  animation: lineSlide 3s ease-in-out infinite;
+}
+
+/* Reveal animation */
+@keyframes reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.animate-reveal {
+  animation: reveal 0.8s ease-out forwards;
+}
+
+/* Enhanced transition for section entry */
+.section-enter {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-enter.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
