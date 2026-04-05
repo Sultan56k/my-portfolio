@@ -57,15 +57,9 @@ export default function Navbar() {
             if (e.key === 'Escape') setIsOpen(false);
         };
 
-        const handleClickOutside = (e) => {
-            if (!e.target.closest('nav')) setIsOpen(false);
-        };
-
         document.addEventListener('keydown', handleEscape);
-        document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('keydown', handleEscape);
-            document.removeEventListener('click', handleClickOutside);
         };
     }, [isOpen]);
 
@@ -77,6 +71,9 @@ export default function Navbar() {
     const handleNavClick = useCallback((e, href) => {
         e.preventDefault();
         setIsOpen(false);
+        // Restore body scroll immediately before scrolling,
+        // otherwise scrollTo is blocked by overflow:hidden
+        document.body.style.overflow = '';
         const target = document.getElementById(href.slice(1));
         if (target) {
             const top = target.getBoundingClientRect().top + window.scrollY - NAVBAR_HEIGHT;
@@ -182,34 +179,53 @@ export default function Navbar() {
             <AnimatePresence>
                 {isOpen && (
                     <>
+                        {/* Backdrop overlay */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
                             onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm md:hidden z-[1]"
-                            style={{ top: '64px' }}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm md:hidden"
+                            style={{ zIndex: 40 }}
                         />
+                        {/* Slide-in panel from right */}
                         <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3, ease: 'easeInOut' }}
-                            className="md:hidden bg-[#0b0b0f]/98 backdrop-blur-xl border-t border-[#2a2a3a]/50 relative z-[2] max-h-[calc(100vh-64px)] overflow-y-auto"
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                            className="fixed top-0 right-0 h-full w-[min(75vw,300px)] bg-[#0b0b0f] border-l border-[#2a2a3a]/50 md:hidden overflow-y-auto"
+                            style={{ zIndex: 50 }}
                         >
-                            <div className="max-w-[1200px] mx-auto px-5 sm:px-8 lg:px-12 w-full py-4">
+                            {/* Close button */}
+                            <div className="flex items-center justify-between px-5 h-16 border-b border-[#2a2a3a]/30">
+                                <span className="text-lg font-bold gradient-text">MS</span>
+                                <motion.button
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/5"
+                                    whileTap={{ scale: 0.9 }}
+                                    aria-label="Close navigation menu"
+                                >
+                                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </motion.button>
+                            </div>
+
+                            <div className="flex flex-col px-5 py-6 gap-1">
                                 {navLinks.map((link, index) => (
                                     <motion.a
                                         key={link.name}
                                         href={link.href}
-                                        initial={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: index * 0.05 }}
+                                        transition={{ delay: 0.1 + index * 0.05 }}
                                         onClick={(e) => handleNavClick(e, link.href)}
-                                        className={`block py-3 transition-colors duration-300 font-medium ${
+                                        className={`block py-3 px-4 rounded-lg text-base font-medium transition-all duration-200 ${
                                             activeSection === link.href.slice(1)
-                                                ? 'text-white pl-4 border-l-2 border-[#6366f1]'
-                                                : 'text-[#a1a1aa] hover:text-white hover:pl-2'
+                                                ? 'text-white bg-[#6366f1]/15 border-l-2 border-[#6366f1]'
+                                                : 'text-[#a1a1aa] hover:text-white hover:bg-white/5'
                                         }`}
                                     >
                                         {link.name}
@@ -217,11 +233,11 @@ export default function Navbar() {
                                 ))}
                                 <motion.a
                                     href="#contact"
-                                    initial={{ opacity: 0, x: -20 }}
+                                    initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.35 }}
+                                    transition={{ delay: 0.1 + navLinks.length * 0.05 }}
                                     onClick={(e) => handleNavClick(e, '#contact')}
-                                    className="btn-primary inline-block mt-4 text-center w-full"
+                                    className="btn-primary block mt-6 text-center text-sm py-3"
                                 >
                                     Hire Me
                                 </motion.a>
