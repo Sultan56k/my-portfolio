@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import Preloader from './components/Preloader'
 import ScrollProgress from './components/ScrollProgress'
 import ParticleField from './components/ParticleField'
@@ -45,6 +46,7 @@ function App() {
                     <BackToTop />
                 </div>
             )}
+            <Analytics />
         </>
     )
 }
