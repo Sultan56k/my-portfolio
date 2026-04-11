@@ -81,7 +81,7 @@ export default function About() {
                     >
                         <motion.div variants={itemVariants} className="space-y-4 text-[#d4d4dc] text-base leading-relaxed">
                             <p>
-                                I am a final-year Computer Science student and a passionate developer specializing in the <strong className="text-white">React ecosystem</strong>. My journey started with a curiosity for how things work on the web, which quickly evolved into a career building professional applications.
+                                I am a Computer Science graduate and a passionate developer specializing in the <strong className="text-white">React ecosystem</strong>. My journey started with a curiosity for how things work on the web, which quickly evolved into a career building professional applications.
                             </p>
                             <p>
                                 At <strong className="text-white">Weblocks</strong>, I gained valuable industry experience working on complex projects, where I learned the importance of clean architecture, performance optimization, and team collaboration.

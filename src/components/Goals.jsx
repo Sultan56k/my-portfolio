@@ -55,7 +55,7 @@ export default function Goals() {
 
                                 <div>
                                     <p className="text-lg text-[#d4d4dc] font-medium leading-relaxed mb-5">
-                                        My goal is to transition into a professional Software Engineering role where I can contribute to meaningful products, learn from experienced mentors, and solve complex real-world problems.
+                                        My goal is to grow as a Software Engineer, contributing to meaningful products, learning from experienced mentors, and solving complex real-world problems.
                                     </p>
                                     <div className="flex items-center gap-3">
                                         <div className="h-[2px] w-10 bg-gradient-to-r from-[#6366f1] to-[#a855f7]" />

@@ -58,8 +58,8 @@ export default function Education() {
                                 className="text-[#6366f1] font-semibold text-lg mb-6 inline-flex items-center gap-2"
                                 whileHover={{ scale: 1.02 }}
                             >
-                                <span className="w-2 h-2 rounded-full bg-[#22d3ee] animate-pulse" />
-                                Final Year Student
+                                <span className="w-2 h-2 rounded-full bg-[#22d3ee]" />
+                                Graduate
                             </motion.p>
 
                             <div className="flex flex-wrap gap-3 justify-center">

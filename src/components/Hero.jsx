@@ -272,7 +272,7 @@ export default function Hero() {
                             .
                         </motion.h2>
                         <motion.p variants={itemVariants} className="text-[#9898a8] text-sm sm:text-base leading-relaxed max-w-2xl mx-auto px-2">
-                            Computer Science student with professional experience in building performant, user-centric applications.
+                            Computer Science graduate with professional experience in building performant, user-centric applications.
                         </motion.p>
                     </motion.div>
 

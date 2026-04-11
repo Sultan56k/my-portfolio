@@ -2,26 +2,25 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { useRef, useState, useEffect, useCallback } from 'react';
 
 /*
- * IMAGE SETUP — place your screenshots here:
- *
- *   public/projects/video-summarizer/cover.jpg   ← card image
- *   public/projects/video-summarizer/2.jpg       ← modal gallery
- *   public/projects/video-summarizer/3.jpg
- *
- * Repeat for each slug below. If an image is missing, the card shows
- * the project's gradient color + a camera icon as placeholder.
+ * IMAGE SETUP — themed stock images are loaded from Unsplash CDN.
+ * To use your own screenshots, replace each `coverImage` / `images` entry
+ * with a local path like `/projects/<slug>/cover.jpg` and place the file
+ * in `public/projects/<slug>/`. If an image fails to load, the card
+ * automatically shows the project's gradient + camera icon fallback.
  */
+
+// Unsplash CDN helpers — same photo served at card (4:3) and modal (16:9) ratios.
+const unsplash = (id, w = 800, h = 600) =>
+    `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
+const card = (id) => unsplash(id, 800, 600);   // 4:3 thumbnail
+const wide = (id) => unsplash(id, 1200, 675);  // 16:9 modal hero
 
 const projects = [
     {
         title: 'Video Summarizer',
         slug: 'video-summarizer',
-        coverImage: '/projects/video-summarizer/cover.jpg',
-        images: [
-            '/projects/video-summarizer/cover.jpg',
-            '/projects/video-summarizer/2.jpg',
-            '/projects/video-summarizer/3.jpg',
-        ],
+        coverImage: card('1574717024653-61fd2cf4d44d'),
+        images: [wide('1574717024653-61fd2cf4d44d')],
         description:
             'A performance-focused application that processes and merges multiple video files to generate a concise summarized output. Built with React Native, it handles large video assets asynchronously with a progress-aware UI that keeps users informed throughout processing. The app prioritizes smooth playback and efficient memory usage.',
         tech: ['React Native', 'Video Processing', 'Async Logic', 'Performance Optimization'],
@@ -31,12 +30,8 @@ const projects = [
     {
         title: 'Student Utility App',
         slug: 'student-utility',
-        coverImage: '/projects/student-utility/cover.jpg',
-        images: [
-            '/projects/student-utility/cover.jpg',
-            '/projects/student-utility/2.jpg',
-            '/projects/student-utility/3.jpg',
-        ],
+        coverImage: card('1481627834876-b7833e8f5570'),
+        images: [wide('1481627834876-b7833e8f5570')],
         description:
             'A comprehensive Android helper application providing scheduling, notes management, and access to academic resources. Backed by Firebase for real-time data synchronization, it offers students a reliable hub for organizing their academic life — from managing timetables to storing lecture notes and sharing resources.',
         tech: ['Android', 'Java', 'Firebase', 'Material Design'],
@@ -46,12 +41,8 @@ const projects = [
     {
         title: 'Step & Water Tracker',
         slug: 'step-water-tracker',
-        coverImage: '/projects/step-water-tracker/cover.jpg',
-        images: [
-            '/projects/step-water-tracker/cover.jpg',
-            '/projects/step-water-tracker/2.jpg',
-            '/projects/step-water-tracker/3.jpg',
-        ],
+        coverImage: card('1571019613454-1cb2f99b2d8b'),
+        images: [wide('1571019613454-1cb2f99b2d8b')],
         description:
             'A mobile fitness tracking app focused on daily step visualization and water intake monitoring. Built with React Native and Expo, it features interactive charts, daily goal tracking, and persistent local storage. The clean, minimal UI makes logging habits effortless while keeping performance smooth on all devices.',
         tech: ['React Native', 'Expo', 'Charts', 'Local Storage'],
@@ -61,12 +52,8 @@ const projects = [
     {
         title: 'AI Chatbot',
         slug: 'ai-chatbot',
-        coverImage: '/projects/ai-chatbot/cover.jpg',
-        images: [
-            '/projects/ai-chatbot/cover.jpg',
-            '/projects/ai-chatbot/2.jpg',
-            '/projects/ai-chatbot/3.jpg',
-        ],
+        coverImage: card('1620712943543-bcc4688e7485'),
+        images: [wide('1620712943543-bcc4688e7485')],
         description:
             'An intelligent chatbot designed to provide fast, context-aware responses with a clean and responsive user interface. Integrates with an AI API for real-time conversational logic, featuring smooth UI animations and efficient state management. Designed for both mobile and web with a consistent cross-platform experience.',
         tech: ['React Native', 'API Integration', 'State Management', 'UI Animations'],
@@ -74,62 +61,46 @@ const projects = [
         color: '#f97316',
     },
     {
-        title: 'Project Five',
-        slug: 'project-five',
-        coverImage: '/projects/project-five/cover.jpg',
-        images: [
-            '/projects/project-five/cover.jpg',
-            '/projects/project-five/2.jpg',
-            '/projects/project-five/3.jpg',
-        ],
+        title: 'Attendance Tracker',
+        slug: 'attendance-tracker',
+        coverImage: card('1506784983877-45594efa4cbe'),
+        images: [wide('1506784983877-45594efa4cbe')],
         description:
-            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
-        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+            'A streamlined attendance management app designed to replace manual roll-call workflows for classrooms and teams. Features one-tap check-in, date-based filtering, and detailed reports with CSV export for administrators. Built with React Native and Firebase, it offers real-time synchronization across devices and a clean, role-aware dashboard that minimizes friction for both students and supervisors.',
+        tech: ['React Native', 'Firebase', 'Real-time Sync', 'CSV Export'],
         gradient: 'from-yellow-400 to-orange-500',
         color: '#f59e0b',
     },
     {
-        title: 'Project Six',
-        slug: 'project-six',
-        coverImage: '/projects/project-six/cover.jpg',
-        images: [
-            '/projects/project-six/cover.jpg',
-            '/projects/project-six/2.jpg',
-            '/projects/project-six/3.jpg',
-        ],
+        title: 'Family Album',
+        slug: 'family-album',
+        coverImage: card('1511895426328-dc8714191300'),
+        images: [wide('1511895426328-dc8714191300')],
         description:
-            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
-        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+            'A private, cloud-backed photo album built to help families preserve and share memories in one secure space. Supports multi-album organization, shared access with trusted members, high-resolution uploads, and offline viewing via local caching. Developed with React Native and Firebase Storage, the app prioritizes smooth gallery navigation, efficient thumbnail loading, and a warm, photo-first UI.',
+        tech: ['React Native', 'Firebase Storage', 'Image Caching', 'Cloud Sync'],
         gradient: 'from-pink-500 to-rose-500',
         color: '#ec4899',
     },
     {
-        title: 'Project Seven',
-        slug: 'project-seven',
-        coverImage: '/projects/project-seven/cover.jpg',
-        images: [
-            '/projects/project-seven/cover.jpg',
-            '/projects/project-seven/2.jpg',
-            '/projects/project-seven/3.jpg',
-        ],
+        title: 'Neuro Nation',
+        slug: 'neuro-nation',
+        coverImage: card('1559757148-5c350d0d3c56'),
+        images: [wide('1559757148-5c350d0d3c56')],
         description:
-            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
-        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+            'A cognitive training app offering a curated set of brain games across memory, logic, and focus categories. Features daily challenges, streak-based progress tracking, and adaptive difficulty that scales with the user\'s performance. Built with React Native, it leverages fluid animations and local persistence to deliver a polished, distraction-free training experience that keeps users coming back.',
+        tech: ['React Native', 'Animations', 'Local Storage', 'Gamification'],
         gradient: 'from-indigo-500 to-purple-600',
         color: '#6366f1',
     },
     {
-        title: 'Project Eight',
-        slug: 'project-eight',
-        coverImage: '/projects/project-eight/cover.jpg',
-        images: [
-            '/projects/project-eight/cover.jpg',
-            '/projects/project-eight/2.jpg',
-            '/projects/project-eight/3.jpg',
-        ],
+        title: 'Child Learning',
+        slug: 'child-learning',
+        coverImage: card('1503676260728-1c00da094a0b'),
+        images: [wide('1503676260728-1c00da094a0b')],
         description:
-            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
-        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+            'An interactive learning app for young children covering alphabets, numbers, shapes, and phonetic exercises. Uses engaging animations, voice prompts, and reward-based progression to keep kids motivated while they learn. Developed with React Native, it emphasizes a safe, ad-free environment and a colorful, tap-friendly interface designed specifically for small hands and short attention spans.',
+        tech: ['React Native', 'Audio & Visuals', 'Gamification', 'Kid-Friendly UI'],
         gradient: 'from-teal-400 to-cyan-500',
         color: '#14b8a6',
     },
