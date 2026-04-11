@@ -698,6 +698,60 @@ textarea {
   animation: none;
 }
 
+/* ─── Project Thumbnail Grid ─────────────────────────────────────── */
+
+.project-thumbnail {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  outline: none;
+}
+
+.project-thumbnail:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px rgba(99, 102, 241, 0.5);
+}
+
+/* ─── Project Modal ──────────────────────────────────────────────── */
+
+.project-modal-panel {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+}
+
+.project-modal-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.project-modal-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.project-modal-panel::-webkit-scrollbar-thumb {
+  background-color: rgba(99, 102, 241, 0.3);
+  border-radius: 2px;
+}
+
+.project-modal-thumbs {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.2) transparent;
+}
+
+.project-modal-thumbs::-webkit-scrollbar {
+  height: 3px;
+}
+
+.project-modal-thumbs::-webkit-scrollbar-thumb {
+  background-color: rgba(99, 102, 241, 0.2);
+  border-radius: 2px;
+}
+
+.project-modal-thumb {
+  position: relative;
+  cursor: pointer;
+}
+
 /* Custom cursor - hide default on desktop */
 @media (hover: hover) and (pointer: fine) {
   body {

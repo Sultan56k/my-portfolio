@@ -1,305 +1,373 @@
-import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { useRef, useState, useEffect, useCallback } from 'react';
+
+/*
+ * IMAGE SETUP — place your screenshots here:
+ *
+ *   public/projects/video-summarizer/cover.jpg   ← card image
+ *   public/projects/video-summarizer/2.jpg       ← modal gallery
+ *   public/projects/video-summarizer/3.jpg
+ *
+ * Repeat for each slug below. If an image is missing, the card shows
+ * the project's gradient color + a camera icon as placeholder.
+ */
 
 const projects = [
     {
-        title: 'Video Summarizer Application',
-        desc: 'A performance-focused application that processes and merges video content to generate a concise summarized output.',
-        tech: ['React Native', 'Video Processing', 'Performance Optimization', 'Asynchronous Logic'],
+        title: 'Video Summarizer',
+        slug: 'video-summarizer',
+        coverImage: '/projects/video-summarizer/cover.jpg',
+        images: [
+            '/projects/video-summarizer/cover.jpg',
+            '/projects/video-summarizer/2.jpg',
+            '/projects/video-summarizer/3.jpg',
+        ],
+        description:
+            'A performance-focused application that processes and merges multiple video files to generate a concise summarized output. Built with React Native, it handles large video assets asynchronously with a progress-aware UI that keeps users informed throughout processing. The app prioritizes smooth playback and efficient memory usage.',
+        tech: ['React Native', 'Video Processing', 'Async Logic', 'Performance Optimization'],
         gradient: 'from-blue-500 to-cyan-400',
         color: '#3b82f6',
-        icon: '🎬',
-        bullets: [
-            'Merges multiple videos into a summarized output',
-            'Optimized handling of large video files',
-            'Progress-aware UI during processing'
-        ],
-        contribution: 'Designed and implemented the complete video processing flow with a focus on performance and user feedback.'
     },
     {
         title: 'Student Utility App',
-        desc: 'A comprehensive Android helper application providing scheduling, notes management, and access to academic resources.',
-        tech: ['Android', 'Java', 'Firebase'],
+        slug: 'student-utility',
+        coverImage: '/projects/student-utility/cover.jpg',
+        images: [
+            '/projects/student-utility/cover.jpg',
+            '/projects/student-utility/2.jpg',
+            '/projects/student-utility/3.jpg',
+        ],
+        description:
+            'A comprehensive Android helper application providing scheduling, notes management, and access to academic resources. Backed by Firebase for real-time data synchronization, it offers students a reliable hub for organizing their academic life — from managing timetables to storing lecture notes and sharing resources.',
+        tech: ['Android', 'Java', 'Firebase', 'Material Design'],
         gradient: 'from-purple-500 to-pink-500',
         color: '#a855f7',
-        icon: '📚',
-        bullets: [
-            'Student-focused scheduling and task management',
-            'Notes organization and academic resource access',
-            'Firebase-backed data synchronization'
-        ],
-        contribution: 'Developed the Android application with a focus on usability, data reliability, and smooth navigation.'
     },
     {
-        title: 'Step & Water Tracker App',
-        desc: 'A mobile fitness tracking app focused on daily step visualization and water intake monitoring.',
+        title: 'Step & Water Tracker',
+        slug: 'step-water-tracker',
+        coverImage: '/projects/step-water-tracker/cover.jpg',
+        images: [
+            '/projects/step-water-tracker/cover.jpg',
+            '/projects/step-water-tracker/2.jpg',
+            '/projects/step-water-tracker/3.jpg',
+        ],
+        description:
+            'A mobile fitness tracking app focused on daily step visualization and water intake monitoring. Built with React Native and Expo, it features interactive charts, daily goal tracking, and persistent local storage. The clean, minimal UI makes logging habits effortless while keeping performance smooth on all devices.',
         tech: ['React Native', 'Expo', 'Charts', 'Local Storage'],
         gradient: 'from-emerald-400 to-teal-500',
         color: '#10b981',
-        icon: '🏃',
-        bullets: [
-            'Real-time step tracking with visual charts',
-            'Daily water intake logging and progress tracking',
-            'Clean UI with performance-aware data rendering'
-        ],
-        contribution: 'Designed and developed the complete mobile interface and data flow.'
     },
     {
-        title: 'AI Chatbot Application',
-        desc: 'An intelligent chatbot designed to provide fast, context-aware responses with a clean and responsive user interface.',
-        tech: ['React / React Native', 'API Integration', 'State Management', 'UI Animations'],
+        title: 'AI Chatbot',
+        slug: 'ai-chatbot',
+        coverImage: '/projects/ai-chatbot/cover.jpg',
+        images: [
+            '/projects/ai-chatbot/cover.jpg',
+            '/projects/ai-chatbot/2.jpg',
+            '/projects/ai-chatbot/3.jpg',
+        ],
+        description:
+            'An intelligent chatbot designed to provide fast, context-aware responses with a clean and responsive user interface. Integrates with an AI API for real-time conversational logic, featuring smooth UI animations and efficient state management. Designed for both mobile and web with a consistent cross-platform experience.',
+        tech: ['React Native', 'API Integration', 'State Management', 'UI Animations'],
         gradient: 'from-orange-500 to-red-500',
         color: '#f97316',
-        icon: '🤖',
-        bullets: [
-            'Real-time conversational chat interface',
-            'Context-aware response handling',
-            'Smooth UI interactions with performance focus'
+    },
+    {
+        title: 'Project Five',
+        slug: 'project-five',
+        coverImage: '/projects/project-five/cover.jpg',
+        images: [
+            '/projects/project-five/cover.jpg',
+            '/projects/project-five/2.jpg',
+            '/projects/project-five/3.jpg',
         ],
-        contribution: 'Built the complete chat interface and integrated conversational logic with a focus on user experience.'
-    }
+        description:
+            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
+        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+        gradient: 'from-yellow-400 to-orange-500',
+        color: '#f59e0b',
+    },
+    {
+        title: 'Project Six',
+        slug: 'project-six',
+        coverImage: '/projects/project-six/cover.jpg',
+        images: [
+            '/projects/project-six/cover.jpg',
+            '/projects/project-six/2.jpg',
+            '/projects/project-six/3.jpg',
+        ],
+        description:
+            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
+        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+        gradient: 'from-pink-500 to-rose-500',
+        color: '#ec4899',
+    },
+    {
+        title: 'Project Seven',
+        slug: 'project-seven',
+        coverImage: '/projects/project-seven/cover.jpg',
+        images: [
+            '/projects/project-seven/cover.jpg',
+            '/projects/project-seven/2.jpg',
+            '/projects/project-seven/3.jpg',
+        ],
+        description:
+            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
+        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+        gradient: 'from-indigo-500 to-purple-600',
+        color: '#6366f1',
+    },
+    {
+        title: 'Project Eight',
+        slug: 'project-eight',
+        coverImage: '/projects/project-eight/cover.jpg',
+        images: [
+            '/projects/project-eight/cover.jpg',
+            '/projects/project-eight/2.jpg',
+            '/projects/project-eight/3.jpg',
+        ],
+        description:
+            'Add your project description here. Describe what problem it solves, the key features you built, the technical challenges you overcame, and your personal contribution to the project.',
+        tech: ['Tech 1', 'Tech 2', 'Tech 3'],
+        gradient: 'from-teal-400 to-cyan-500',
+        color: '#14b8a6',
+    },
 ];
 
-function ProjectCard({ project, index, isInView }) {
-    const cardRef = useRef(null);
-    const [isHovered, setIsHovered] = useState(false);
+// ─── Thumbnail Card ────────────────────────────────────────────────────────────
 
-    const mouseX = useMotionValue(0.5);
-    const mouseY = useMotionValue(0.5);
-
-    const rotateX = useSpring(0, { stiffness: 200, damping: 20 });
-    const rotateY = useSpring(0, { stiffness: 200, damping: 20 });
-    const glowX = useSpring(50, { stiffness: 200, damping: 30 });
-    const glowY = useSpring(50, { stiffness: 200, damping: 30 });
-
-    const handleMouse = useCallback((e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        mouseX.set(x);
-        mouseY.set(y);
-        rotateX.set((y - 0.5) * -8);
-        rotateY.set((x - 0.5) * 8);
-        glowX.set(x * 100);
-        glowY.set(y * 100);
-    }, [mouseX, mouseY, rotateX, rotateY, glowX, glowY]);
-
-    const handleLeave = useCallback(() => {
-        rotateX.set(0);
-        rotateY.set(0);
-        glowX.set(50);
-        glowY.set(50);
-        setIsHovered(false);
-    }, [rotateX, rotateY, glowX, glowY]);
-
-    useEffect(() => {
-        const unsubX = glowX.on('change', (v) => {
-            if (cardRef.current) cardRef.current.style.setProperty('--glow-x', `${v}%`);
-        });
-        const unsubY = glowY.on('change', (v) => {
-            if (cardRef.current) cardRef.current.style.setProperty('--glow-y', `${v}%`);
-        });
-        return () => { unsubX(); unsubY(); };
-    }, [glowX, glowY]);
+function ProjectThumbnail({ project, index, isInView, onOpen }) {
+    const [imgLoaded, setImgLoaded] = useState(false);
+    const [imgError, setImgError] = useState(false);
 
     const cardVariants = {
-        hidden: { opacity: 0, y: 50, scale: 0.95 },
+        hidden: { opacity: 0, y: 30, scale: 0.95 },
         visible: {
             opacity: 1, y: 0, scale: 1,
             transition: {
-                delay: index * 0.15,
-                duration: 0.7,
+                delay: index * 0.08,
+                duration: 0.55,
                 ease: [0.16, 1, 0.3, 1],
-            }
-        }
-    };
-
-    const bulletVariants = {
-        hidden: { opacity: 0, x: -20 },
-        visible: (i) => ({
-            opacity: 1, x: 0,
-            transition: { delay: index * 0.15 + i * 0.1 + 0.4, duration: 0.5, ease: 'easeOut' }
-        })
-    };
-
-    const tagVariants = {
-        hidden: { opacity: 0, scale: 0.8 },
-        visible: (i) => ({
-            opacity: 1, scale: 1,
-            transition: { delay: index * 0.15 + i * 0.06 + 0.6, duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }
-        })
+            },
+        },
     };
 
     return (
         <motion.div
-            ref={cardRef}
             variants={cardVariants}
             initial="hidden"
             animate={isInView ? 'visible' : 'hidden'}
-            onMouseMove={handleMouse}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={handleLeave}
-            style={{ perspective: 1000 }}
-            className="project-card-wrapper"
+            className="project-thumbnail group cursor-pointer"
+            onClick={() => onOpen(project)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onOpen(project)}
+            aria-label={`View ${project.title} details`}
         >
-            <motion.div
-                style={{
-                    rotateX,
-                    rotateY,
-                    transformStyle: 'preserve-3d',
-                }}
-                className="project-card group relative overflow-hidden rounded-2xl"
-            >
-                {/* Animated gradient border */}
+            {/* Aspect-ratio container */}
+            <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl">
+                {/* Gradient placeholder (always visible as background) */}
                 <div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-[1]"
-                    style={{
-                        padding: '1px',
-                        background: `linear-gradient(135deg, ${project.color}, transparent 60%)`,
-                    }}
-                />
-
-                {/* Mouse-following glow */}
-                <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl"
-                    style={{
-                        background: `radial-gradient(600px circle at var(--glow-x, 50%) var(--glow-y, 50%), ${project.color}15, transparent 40%)`,
-                    }}
-                />
-
-                {/* Shimmer sweep on hover */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-                    <motion.div
-                        className="absolute inset-0"
-                        initial={{ x: '-100%' }}
-                        animate={isHovered ? { x: '200%' } : { x: '-100%' }}
-                        transition={{ duration: 0.8, ease: 'easeInOut' }}
-                        style={{
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent)',
-                            width: '50%',
-                        }}
-                    />
+                    className={`absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br ${project.gradient}`}
+                    style={{ opacity: imgLoaded && !imgError ? 0 : 1, transition: 'opacity 0.4s' }}
+                >
+                    <svg
+                        className="w-10 h-10 text-white/40 mb-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M13.5 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-6 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z" />
+                    </svg>
+                    <span className="text-white/30 text-xs">No image yet</span>
                 </div>
 
-                {/* Top gradient line + glow */}
-                <motion.div
-                    className={`absolute top-0 left-0 h-[2px] bg-gradient-to-r ${project.gradient}`}
-                    initial={{ width: '0%' }}
-                    animate={isInView ? (isHovered ? { width: '100%' } : { width: '30%' }) : { width: '0%' }}
-                    transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                />
-                <motion.div
-                    className={`absolute top-0 left-0 h-[6px] bg-gradient-to-r ${project.gradient} blur-sm`}
-                    initial={{ width: '0%', opacity: 0 }}
-                    animate={isHovered ? { width: '100%', opacity: 0.6 } : { width: '0%', opacity: 0 }}
-                    transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                {/* Actual cover image */}
+                {!imgError && (
+                    <img
+                        src={project.coverImage}
+                        alt={project.title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        style={{ opacity: imgLoaded ? 1 : 0, transition: 'opacity 0.4s, transform 0.5s' }}
+                        onLoad={() => setImgLoaded(true)}
+                        onError={() => setImgError(true)}
+                    />
+                )}
+
+                {/* Bottom title scrim */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+
+                {/* Hover overlay */}
+                <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ background: `${project.color}20` }}
                 />
 
-                <div className="card-content justify-between h-full relative z-10 p-6 sm:p-7 lg:p-8">
-                    <div>
-                        {/* Header: Icon + Project number */}
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-xs font-bold text-[#3a3a4a] tracking-wider uppercase">
-                                Project 0{index + 1}
-                            </span>
-                            <motion.span
-                                className="text-2xl"
-                                animate={isHovered ? {
-                                    scale: [1, 1.2, 1],
-                                    rotate: [0, -10, 10, 0],
-                                } : { scale: 1, rotate: 0 }}
-                                transition={{ duration: 0.5, ease: 'easeInOut' }}
-                            >
-                                {project.icon}
-                            </motion.span>
+                {/* Title */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
+                    <p className="text-white font-semibold text-sm leading-tight drop-shadow-sm truncate">
+                        {project.title}
+                    </p>
+                </div>
+
+                {/* Colored top border line */}
+                <div
+                    className="absolute top-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-500 ease-out"
+                    style={{ background: `linear-gradient(90deg, ${project.color}, transparent)` }}
+                />
+            </div>
+        </motion.div>
+    );
+}
+
+// ─── Project Modal ─────────────────────────────────────────────────────────────
+
+function ProjectModal({ project, onClose }) {
+    const [activeImage, setActiveImage] = useState(project.images[0]);
+    const [imgErrors, setImgErrors] = useState({});
+
+    // Close on Escape key
+    useEffect(() => {
+        const handler = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [onClose]);
+
+    // Prevent body scroll while modal is open
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => { document.body.style.overflow = ''; };
+    }, []);
+
+    const handleImgError = useCallback((src) => {
+        setImgErrors((prev) => ({ ...prev, [src]: true }));
+    }, []);
+
+    const validImages = project.images.filter((img) => !imgErrors[img]);
+
+    return (
+        <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+        >
+            {/* Backdrop */}
+            <motion.div
+                className="absolute inset-0 bg-black/75 backdrop-blur-md"
+                onClick={onClose}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+            />
+
+            {/* Modal panel */}
+            <motion.div
+                className="project-modal-panel relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl z-10"
+                initial={{ opacity: 0, y: 40, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.97 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Close button */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white/70 hover:text-white"
+                    aria-label="Close modal"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                {/* ── Image Gallery ── */}
+                <div className="p-5 pb-3">
+                    {/* Main image */}
+                    <div
+                        className="relative w-full rounded-xl overflow-hidden mb-3"
+                        style={{ aspectRatio: '16/9' }}
+                    >
+                        {/* Gradient fallback */}
+                        <div
+                            className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${project.gradient}`}
+                            style={{ opacity: imgErrors[activeImage] ? 1 : 0, transition: 'opacity 0.3s' }}
+                        >
+                            <svg className="w-12 h-12 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M13.5 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                            </svg>
                         </div>
-
-                        {/* Title with animated accent dot */}
-                        <h3 className="type-h3 mb-3 group-hover:text-white transition-colors duration-300 flex items-center gap-3">
-                            <motion.span
-                                className="w-2.5 h-2.5 rounded-full shrink-0"
-                                style={{ backgroundColor: project.color }}
-                                animate={isHovered ? {
-                                    scale: [1, 1.5, 1],
-                                    boxShadow: [
-                                        `0 0 0px ${project.color}`,
-                                        `0 0 12px ${project.color}`,
-                                        `0 0 4px ${project.color}`,
-                                    ]
-                                } : { scale: 1, boxShadow: `0 0 0px ${project.color}` }}
-                                transition={{ duration: 0.6, ease: 'easeInOut' }}
+                        {!imgErrors[activeImage] && (
+                            <img
+                                key={activeImage}
+                                src={activeImage}
+                                alt={`${project.title} screenshot`}
+                                className="w-full h-full object-cover"
+                                onError={() => handleImgError(activeImage)}
                             />
-                            <span>{project.title}</span>
-                        </h3>
-
-                        {/* Description */}
-                        <p className="type-body mb-5 text-[var(--color-text-muted)] leading-relaxed">
-                            {project.desc}
-                        </p>
-
-                        {/* Animated bullet points */}
-                        {project.bullets && (
-                            <ul className="mb-5 space-y-3">
-                                {project.bullets.map((bullet, idx) => (
-                                    <motion.li
-                                        key={idx}
-                                        custom={idx}
-                                        variants={bulletVariants}
-                                        initial="hidden"
-                                        animate={isInView ? 'visible' : 'hidden'}
-                                        className="flex items-start type-small text-[var(--color-text-muted)] group/bullet"
-                                    >
-                                        <motion.span
-                                            className="w-1.5 h-1.5 rounded-full mt-1.5 mr-3 shrink-0"
-                                            style={{ backgroundColor: project.color }}
-                                            whileHover={{ scale: 2 }}
-                                        />
-                                        <span className="leading-relaxed group-hover/bullet:text-[var(--color-text-secondary)] transition-colors duration-200">
-                                            {bullet}
-                                        </span>
-                                    </motion.li>
-                                ))}
-                            </ul>
-                        )}
-
-                        {/* Contribution quote */}
-                        {project.contribution && (
-                            <motion.div
-                                className="mb-5 pl-4 border-l-2 relative"
-                                style={{ borderColor: `${project.color}40` }}
-                                whileHover={{ borderColor: project.color }}
-                            >
-                                <p className="type-small italic text-[var(--color-text-secondary)]">
-                                    {project.contribution}
-                                </p>
-                            </motion.div>
                         )}
                     </div>
 
-                    {/* Tech tags with staggered pop-in */}
-                    <div className="pt-4 border-t border-[var(--color-border-subtle)]/50 flex flex-wrap gap-2">
+                    {/* Thumbnail strip */}
+                    {project.images.length > 1 && (
+                        <div className="flex gap-2 overflow-x-auto pb-1 project-modal-thumbs">
+                            {project.images.map((img, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setActiveImage(img)}
+                                    className={`project-modal-thumb flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === img ? 'border-current opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}
+                                    style={{ borderColor: activeImage === img ? project.color : 'transparent' }}
+                                    aria-label={`View image ${idx + 1}`}
+                                >
+                                    <div
+                                        className={`w-full h-full bg-gradient-to-br ${project.gradient}`}
+                                        style={{ opacity: imgErrors[img] ? 1 : 0, position: 'absolute' }}
+                                    />
+                                    {!imgErrors[img] && (
+                                        <img
+                                            src={img}
+                                            alt={`Thumbnail ${idx + 1}`}
+                                            className="w-full h-full object-cover"
+                                            onError={() => handleImgError(img)}
+                                        />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* ── Project Details ── */}
+                <div className="px-5 pb-6">
+                    {/* Accent line */}
+                    <div
+                        className="h-[2px] w-12 rounded-full mb-4"
+                        style={{ background: `linear-gradient(90deg, ${project.color}, transparent)` }}
+                    />
+
+                    <h2 className="text-xl font-bold text-white mb-3">{project.title}</h2>
+
+                    <p className="text-sm leading-relaxed text-[var(--color-text-muted)] mb-5">
+                        {project.description}
+                    </p>
+
+                    {/* Tech tags */}
+                    <div className="flex flex-wrap gap-2">
                         {project.tech.map((t, idx) => (
-                            <motion.span
+                            <span
                                 key={idx}
-                                custom={idx}
-                                variants={tagVariants}
-                                initial="hidden"
-                                animate={isInView ? 'visible' : 'hidden'}
-                                whileHover={{
-                                    scale: 1.08,
-                                    borderColor: project.color,
-                                    color: '#fff',
-                                    backgroundColor: `${project.color}18`,
-                                }}
-                                className="type-caption px-3 py-1.5 rounded-lg border transition-all duration-300 cursor-default"
+                                className="text-xs px-3 py-1.5 rounded-lg border"
                                 style={{
-                                    backgroundColor: `${project.color}08`,
-                                    borderColor: `${project.color}20`,
+                                    backgroundColor: `${project.color}10`,
+                                    borderColor: `${project.color}25`,
                                     color: 'var(--color-text-secondary)',
                                 }}
                             >
                                 #{t}
-                            </motion.span>
+                            </span>
                         ))}
                     </div>
                 </div>
@@ -308,9 +376,20 @@ function ProjectCard({ project, index, isInView }) {
     );
 }
 
+// ─── Projects Section ──────────────────────────────────────────────────────────
+
 export default function Projects() {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: '-80px' });
+    const isInView = useInView(ref, { once: true, margin: '-60px' });
+    const [selectedProject, setSelectedProject] = useState(null);
+
+    const handleOpen = useCallback((project) => {
+        setSelectedProject(project);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setSelectedProject(null);
+    }, []);
 
     return (
         <section id="projects" className="section-wrapper relative overflow-hidden" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
@@ -326,21 +405,37 @@ export default function Projects() {
                     className="section-header"
                 >
                     <span className="section-subtitle">Featured Work</span>
-                    <h2 className="type-h2 text-[var(--color-text-primary)]">
-                        Recent Projects
-                    </h2>
+                    <h2 className="type-h2 text-[var(--color-text-primary)]">Recent Projects</h2>
                     <div className="section-divider mt-2" />
                     <p className="section-description type-body mt-4">
-                        A selection of projects that showcase my development capabilities.
+                        A selection of projects that showcase my development capabilities. Click any project to view details.
                     </p>
                 </motion.div>
 
-                <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+                {/* 4-column grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                     {projects.map((p, i) => (
-                        <ProjectCard key={i} project={p} index={i} isInView={isInView} />
+                        <ProjectThumbnail
+                            key={p.slug}
+                            project={p}
+                            index={i}
+                            isInView={isInView}
+                            onOpen={handleOpen}
+                        />
                     ))}
                 </div>
             </div>
+
+            {/* Modal */}
+            <AnimatePresence>
+                {selectedProject && (
+                    <ProjectModal
+                        key={selectedProject.slug}
+                        project={selectedProject}
+                        onClose={handleClose}
+                    />
+                )}
+            </AnimatePresence>
         </section>
     );
 }
