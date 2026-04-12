@@ -1,5 +1,21 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
+import emailjs from '@emailjs/browser';
+
+/*
+ * CONTACT FORM SETUP — EmailJS
+ * ---------------------------------------------------------------
+ * 1. Sign up free at https://www.emailjs.com/
+ * 2. Add an Email Service (Gmail is easiest — connect 244msultan@gmail.com)
+ * 3. Create an Email Template with variables: {{from_name}}, {{from_email}}, {{message}}
+ * 4. Copy your Service ID, Template ID, and Public Key from the dashboard
+ * 5. Create a `.env` file at the project root (already in .gitignore) with:
+ *      VITE_EMAILJS_SERVICE_ID=xxx
+ *      VITE_EMAILJS_TEMPLATE_ID=xxx
+ *      VITE_EMAILJS_PUBLIC_KEY=xxx
+ * 6. Restart `npm run dev` — Vite only reads env vars at startup.
+ * See .env.example for a template.
+ */
 
 const contactLinks = [
     {
@@ -48,23 +64,29 @@ const contactLinks = [
     },
 ];
 
-function FormInput({ label, type = 'text', placeholder, isTextarea }) {
+function FormInput({ label, type = 'text', placeholder, isTextarea, name, value, onChange, required, disabled }) {
     const [focused, setFocused] = useState(false);
     const Component = isTextarea ? 'textarea' : 'input';
 
     return (
         <div className="space-y-2">
-            <label className="text-xs font-bold text-[#9898a8] uppercase tracking-wider block">
+            <label htmlFor={name} className="text-xs font-bold text-[#9898a8] uppercase tracking-wider block">
                 {label}
             </label>
             <div className={`relative rounded-lg transition-all duration-300 ${focused ? 'ring-2 ring-[#6366f1]/20' : ''}`}>
                 <Component
+                    id={name}
+                    name={name}
                     type={type}
+                    value={value}
+                    onChange={onChange}
+                    required={required}
+                    disabled={disabled}
                     placeholder={placeholder}
                     rows={isTextarea ? 5 : undefined}
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
-                    className={`w-full bg-[#13131a] border border-[#2a2a3a] rounded-lg px-4 py-3.5 text-white placeholder-[#52525b] focus:border-[#6366f1] focus:outline-none transition-all duration-300 ${isTextarea ? 'resize-none' : ''}`}
+                    className={`w-full bg-[#13131a] border border-[#2a2a3a] rounded-lg px-4 py-3.5 text-white placeholder-[#52525b] focus:border-[#6366f1] focus:outline-none transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed ${isTextarea ? 'resize-none' : ''}`}
                 />
             </div>
         </div>
@@ -74,12 +96,56 @@ function FormInput({ label, type = 'text', placeholder, isTextarea }) {
 export default function Contact() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
-    const [formSubmitted, setFormSubmitted] = useState(false);
+    const [form, setForm] = useState({ name: '', email: '', message: '' });
+    const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'success' | 'error'
+    const [errorMsg, setErrorMsg] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleChange = (e) => {
+        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setFormSubmitted(true);
-        setTimeout(() => setFormSubmitted(false), 3000);
+        if (status === 'sending') return;
+
+        if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+            setStatus('error');
+            setErrorMsg('Please fill in all fields before sending.');
+            return;
+        }
+
+        const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+        const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+        const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+        if (!serviceId || !templateId || !publicKey) {
+            setStatus('error');
+            setErrorMsg('Email service is not configured yet. Please email me directly at 244msultan@gmail.com.');
+            return;
+        }
+
+        setStatus('sending');
+        setErrorMsg('');
+        try {
+            await emailjs.send(
+                serviceId,
+                templateId,
+                {
+                    from_name: form.name,
+                    from_email: form.email,
+                    message: form.message,
+                    reply_to: form.email,
+                },
+                { publicKey }
+            );
+            setStatus('success');
+            setForm({ name: '', email: '', message: '' });
+            setTimeout(() => setStatus('idle'), 4000);
+        } catch (err) {
+            console.error('EmailJS send failed:', err);
+            setStatus('error');
+            setErrorMsg('Something went wrong. Please try again or email me directly.');
+        }
     };
 
     return (
@@ -111,25 +177,61 @@ export default function Contact() {
                         transition={{ delay: 0.2, duration: 0.6 }}
                         className="card-base card-inner-glow"
                     >
-                        <form className="flex flex-col gap-4 sm:gap-6" onSubmit={handleSubmit}>
-                            <FormInput label="Name" placeholder="Your Name" />
-                            <FormInput label="Email" type="email" placeholder="john@example.com" />
-                            <FormInput label="Message" placeholder="How can I help you?" isTextarea />
+                        <form className="flex flex-col gap-4 sm:gap-6" onSubmit={handleSubmit} noValidate>
+                            <FormInput
+                                label="Name"
+                                name="name"
+                                value={form.name}
+                                onChange={handleChange}
+                                placeholder="Your Name"
+                                required
+                                disabled={status === 'sending'}
+                            />
+                            <FormInput
+                                label="Email"
+                                name="email"
+                                type="email"
+                                value={form.email}
+                                onChange={handleChange}
+                                placeholder="john@example.com"
+                                required
+                                disabled={status === 'sending'}
+                            />
+                            <FormInput
+                                label="Message"
+                                name="message"
+                                value={form.message}
+                                onChange={handleChange}
+                                placeholder="How can I help you?"
+                                isTextarea
+                                required
+                                disabled={status === 'sending'}
+                            />
 
                             <motion.button
                                 type="submit"
-                                className="btn-primary mt-2 w-full gap-2"
-                                whileHover={{ scale: 1.01 }}
-                                whileTap={{ scale: 0.98 }}
+                                disabled={status === 'sending' || status === 'success'}
+                                className="btn-primary mt-2 w-full gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
+                                whileHover={status === 'idle' || status === 'error' ? { scale: 1.01 } : {}}
+                                whileTap={status === 'idle' || status === 'error' ? { scale: 0.98 } : {}}
                             >
-                                {formSubmitted ? (
+                                {status === 'sending' && (
+                                    <>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="animate-spin">
+                                            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                                        </svg>
+                                        Sending...
+                                    </>
+                                )}
+                                {status === 'success' && (
                                     <>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                             <polyline points="20 6 9 17 4 12" />
                                         </svg>
                                         Message Sent!
                                     </>
-                                ) : (
+                                )}
+                                {(status === 'idle' || status === 'error') && (
                                     <>
                                         Send Message
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -138,6 +240,12 @@ export default function Contact() {
                                     </>
                                 )}
                             </motion.button>
+
+                            {status === 'error' && errorMsg && (
+                                <p className="text-sm text-red-400/90 text-center -mt-2" role="alert">
+                                    {errorMsg}
+                                </p>
+                            )}
                         </form>
                     </motion.div>
 
