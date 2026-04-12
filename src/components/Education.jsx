@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import AnimatedHeading from './AnimatedHeading';
 
 export default function Education() {
     const ref = useRef(null);
@@ -12,17 +13,9 @@ export default function Education() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#6366f1]/5 rounded-full blur-[100px] -z-10" />
 
             <div className="section-container">
-                {/* Header */}
-                <motion.div
-                    ref={ref}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    className="section-header"
-                >
-                    <span className="section-subtitle">Education</span>
-                    <h2 className="type-h2 text-white">Academic Background</h2>
-                    <div className="section-divider mt-2" />
-                </motion.div>
+                <div ref={ref}>
+                    <AnimatedHeading eyebrow="Education" title="Academic Background" />
+                </div>
 
                 {/* Centered Content */}
                 <motion.div

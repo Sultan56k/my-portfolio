@@ -1,110 +1,15 @@
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import AnimatedHeading from './AnimatedHeading';
+import { projects, categories } from '../data/projects';
 
 /*
- * IMAGE SETUP — themed stock images are loaded from Unsplash CDN.
- * To use your own screenshots, replace each `coverImage` / `images` entry
- * with a local path like `/projects/<slug>/cover.jpg` and place the file
- * in `public/projects/<slug>/`. If an image fails to load, the card
- * automatically shows the project's gradient + camera icon fallback.
+ * Projects section
+ * - Category filter chips (All / Mobile / Web / AI)
+ * - Click card → modal with image gallery
+ * - Keyboard in modal: ← / → cycles projects, Esc closes
+ * - Click hero image → fullscreen lightbox
  */
-
-// Unsplash CDN helpers — same photo served at card (4:3) and modal (16:9) ratios.
-const unsplash = (id, w = 800, h = 600) =>
-    `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
-const card = (id) => unsplash(id, 800, 600);   // 4:3 thumbnail
-const wide = (id) => unsplash(id, 1200, 675);  // 16:9 modal hero
-
-const projects = [
-    {
-        title: 'Video Summarizer',
-        slug: 'video-summarizer',
-        coverImage: card('1574717024653-61fd2cf4d44d'),
-        images: [wide('1574717024653-61fd2cf4d44d')],
-        description:
-            'A performance-focused application that processes and merges multiple video files to generate a concise summarized output. Built with React Native, it handles large video assets asynchronously with a progress-aware UI that keeps users informed throughout processing. The app prioritizes smooth playback and efficient memory usage.',
-        tech: ['React Native', 'Video Processing', 'Async Logic', 'Performance Optimization'],
-        gradient: 'from-blue-500 to-cyan-400',
-        color: '#3b82f6',
-    },
-    {
-        title: 'Student Utility App',
-        slug: 'student-utility',
-        coverImage: card('1481627834876-b7833e8f5570'),
-        images: [wide('1481627834876-b7833e8f5570')],
-        description:
-            'A comprehensive Android helper application providing scheduling, notes management, and access to academic resources. Backed by Firebase for real-time data synchronization, it offers students a reliable hub for organizing their academic life — from managing timetables to storing lecture notes and sharing resources.',
-        tech: ['Android', 'Java', 'Firebase', 'Material Design'],
-        gradient: 'from-purple-500 to-pink-500',
-        color: '#a855f7',
-    },
-    {
-        title: 'Step & Water Tracker',
-        slug: 'step-water-tracker',
-        coverImage: card('1571019613454-1cb2f99b2d8b'),
-        images: [wide('1571019613454-1cb2f99b2d8b')],
-        description:
-            'A mobile fitness tracking app focused on daily step visualization and water intake monitoring. Built with React Native and Expo, it features interactive charts, daily goal tracking, and persistent local storage. The clean, minimal UI makes logging habits effortless while keeping performance smooth on all devices.',
-        tech: ['React Native', 'Expo', 'Charts', 'Local Storage'],
-        gradient: 'from-emerald-400 to-teal-500',
-        color: '#10b981',
-    },
-    {
-        title: 'AI Chatbot',
-        slug: 'ai-chatbot',
-        coverImage: card('1620712943543-bcc4688e7485'),
-        images: [wide('1620712943543-bcc4688e7485')],
-        description:
-            'An intelligent chatbot designed to provide fast, context-aware responses with a clean and responsive user interface. Integrates with an AI API for real-time conversational logic, featuring smooth UI animations and efficient state management. Designed for both mobile and web with a consistent cross-platform experience.',
-        tech: ['React Native', 'API Integration', 'State Management', 'UI Animations'],
-        gradient: 'from-orange-500 to-red-500',
-        color: '#f97316',
-    },
-    {
-        title: 'Attendance Tracker',
-        slug: 'attendance-tracker',
-        coverImage: card('1506784983877-45594efa4cbe'),
-        images: [wide('1506784983877-45594efa4cbe')],
-        description:
-            'A streamlined attendance management app designed to replace manual roll-call workflows for classrooms and teams. Features one-tap check-in, date-based filtering, and detailed reports with CSV export for administrators. Built with React Native and Firebase, it offers real-time synchronization across devices and a clean, role-aware dashboard that minimizes friction for both students and supervisors.',
-        tech: ['React Native', 'Firebase', 'Real-time Sync', 'CSV Export'],
-        gradient: 'from-yellow-400 to-orange-500',
-        color: '#f59e0b',
-    },
-    {
-        title: 'Family Album',
-        slug: 'family-album',
-        coverImage: card('1511895426328-dc8714191300'),
-        images: [wide('1511895426328-dc8714191300')],
-        description:
-            'A private, cloud-backed photo album built to help families preserve and share memories in one secure space. Supports multi-album organization, shared access with trusted members, high-resolution uploads, and offline viewing via local caching. Developed with React Native and Firebase Storage, the app prioritizes smooth gallery navigation, efficient thumbnail loading, and a warm, photo-first UI.',
-        tech: ['React Native', 'Firebase Storage', 'Image Caching', 'Cloud Sync'],
-        gradient: 'from-pink-500 to-rose-500',
-        color: '#ec4899',
-    },
-    {
-        title: 'Neuro Nation',
-        slug: 'neuro-nation',
-        coverImage: card('1559757148-5c350d0d3c56'),
-        images: [wide('1559757148-5c350d0d3c56')],
-        description:
-            'A cognitive training app offering a curated set of brain games across memory, logic, and focus categories. Features daily challenges, streak-based progress tracking, and adaptive difficulty that scales with the user\'s performance. Built with React Native, it leverages fluid animations and local persistence to deliver a polished, distraction-free training experience that keeps users coming back.',
-        tech: ['React Native', 'Animations', 'Local Storage', 'Gamification'],
-        gradient: 'from-indigo-500 to-purple-600',
-        color: '#6366f1',
-    },
-    {
-        title: 'Child Learning',
-        slug: 'child-learning',
-        coverImage: card('1503676260728-1c00da094a0b'),
-        images: [wide('1503676260728-1c00da094a0b')],
-        description:
-            'An interactive learning app for young children covering alphabets, numbers, shapes, and phonetic exercises. Uses engaging animations, voice prompts, and reward-based progression to keep kids motivated while they learn. Developed with React Native, it emphasizes a safe, ad-free environment and a colorful, tap-friendly interface designed specifically for small hands and short attention spans.',
-        tech: ['React Native', 'Audio & Visuals', 'Gamification', 'Kid-Friendly UI'],
-        gradient: 'from-teal-400 to-cyan-500',
-        color: '#14b8a6',
-    },
-];
 
 // ─── Thumbnail Card ────────────────────────────────────────────────────────────
 
@@ -133,12 +38,15 @@ function ProjectThumbnail({ project, index, isInView, onOpen }) {
             onClick={() => onOpen(project)}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onOpen(project)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onOpen(project);
+                }
+            }}
             aria-label={`View ${project.title} details`}
         >
-            {/* Aspect-ratio container */}
             <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl">
-                {/* Gradient placeholder (always visible as background) */}
                 <div
                     className={`absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br ${project.gradient}`}
                     style={{ opacity: imgLoaded && !imgError ? 0 : 1, transition: 'opacity 0.4s' }}
@@ -155,11 +63,11 @@ function ProjectThumbnail({ project, index, isInView, onOpen }) {
                     <span className="text-white/30 text-xs">No image yet</span>
                 </div>
 
-                {/* Actual cover image */}
                 {!imgError && (
                     <img
                         src={project.coverImage}
                         alt={project.title}
+                        loading="lazy"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         style={{ opacity: imgLoaded ? 1 : 0, transition: 'opacity 0.4s, transform 0.5s' }}
                         onLoad={() => setImgLoaded(true)}
@@ -167,23 +75,28 @@ function ProjectThumbnail({ project, index, isInView, onOpen }) {
                     />
                 )}
 
-                {/* Bottom title scrim */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
 
-                {/* Hover overlay */}
                 <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     style={{ background: `${project.color}20` }}
                 />
 
-                {/* Title */}
+                {/* Category chip */}
+                <div className="absolute top-2 right-2">
+                    <span
+                        className="text-[10px] font-bold tracking-wide uppercase px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm text-white/80 border border-white/10"
+                    >
+                        {project.category}
+                    </span>
+                </div>
+
                 <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
                     <p className="text-white font-semibold text-sm leading-tight drop-shadow-sm truncate">
                         {project.title}
                     </p>
                 </div>
 
-                {/* Colored top border line */}
                 <div
                     className="absolute top-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-500 ease-out"
                     style={{ background: `linear-gradient(90deg, ${project.color}, transparent)` }}
@@ -193,20 +106,70 @@ function ProjectThumbnail({ project, index, isInView, onOpen }) {
     );
 }
 
-// ─── Project Modal ─────────────────────────────────────────────────────────────
+// ─── Lightbox (fullscreen image) ───────────────────────────────────────────────
 
-function ProjectModal({ project, onClose }) {
-    const [activeImage, setActiveImage] = useState(project.images[0]);
-    const [imgErrors, setImgErrors] = useState({});
-
-    // Close on Escape key
+function Lightbox({ src, alt, onClose }) {
     useEffect(() => {
         const handler = (e) => { if (e.key === 'Escape') onClose(); };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
     }, [onClose]);
 
-    // Prevent body scroll while modal is open
+    return (
+        <motion.div
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 cursor-zoom-out"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+        >
+            <div className="absolute inset-0 bg-black/95 backdrop-blur-md" />
+            <motion.img
+                key={src}
+                src={src}
+                alt={alt}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="relative max-w-[95vw] max-h-[92vh] object-contain rounded-lg shadow-2xl"
+            />
+            <button
+                onClick={(e) => { e.stopPropagation(); onClose(); }}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center"
+                aria-label="Close image"
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </motion.div>
+    );
+}
+
+// ─── Project Modal ─────────────────────────────────────────────────────────────
+
+function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex }) {
+    const [activeImage, setActiveImage] = useState(project.images[0]);
+    const [imgErrors, setImgErrors] = useState({});
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+
+    useEffect(() => {
+        setActiveImage(project.images[0]);
+        setImgErrors({});
+    }, [project]);
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (lightboxOpen) return;
+            if (e.key === 'Escape') onClose();
+            else if (e.key === 'ArrowRight') onNext();
+            else if (e.key === 'ArrowLeft') onPrev();
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [onClose, onNext, onPrev, lightboxOpen]);
+
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => { document.body.style.overflow = ''; };
@@ -216,8 +179,6 @@ function ProjectModal({ project, onClose }) {
         setImgErrors((prev) => ({ ...prev, [src]: true }));
     }, []);
 
-    const validImages = project.images.filter((img) => !imgErrors[img]);
-
     return (
         <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -226,7 +187,6 @@ function ProjectModal({ project, onClose }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
         >
-            {/* Backdrop */}
             <motion.div
                 className="absolute inset-0 bg-black/75 backdrop-blur-md"
                 onClick={onClose}
@@ -235,8 +195,32 @@ function ProjectModal({ project, onClose }) {
                 exit={{ opacity: 0 }}
             />
 
-            {/* Modal panel */}
+            {/* Prev / Next arrows (desktop) */}
+            {total > 1 && (
+                <>
+                    <button
+                        onClick={onPrev}
+                        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white items-center justify-center transition-colors"
+                        aria-label="Previous project"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <path d="M15 18l-6-6 6-6" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={onNext}
+                        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white items-center justify-center transition-colors"
+                        aria-label="Next project"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <path d="M9 6l6 6-6 6" />
+                        </svg>
+                    </button>
+                </>
+            )}
+
             <motion.div
+                key={project.slug}
                 className="project-modal-panel relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl z-10"
                 initial={{ opacity: 0, y: 40, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -244,7 +228,6 @@ function ProjectModal({ project, onClose }) {
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Close button */}
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white/70 hover:text-white"
@@ -255,14 +238,12 @@ function ProjectModal({ project, onClose }) {
                     </svg>
                 </button>
 
-                {/* ── Image Gallery ── */}
                 <div className="p-5 pb-3">
-                    {/* Main image */}
                     <div
-                        className="relative w-full rounded-xl overflow-hidden mb-3"
+                        className="relative w-full rounded-xl overflow-hidden mb-3 cursor-zoom-in group"
                         style={{ aspectRatio: '16/9' }}
+                        onClick={() => !imgErrors[activeImage] && setLightboxOpen(true)}
                     >
-                        {/* Gradient fallback */}
                         <div
                             className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${project.gradient}`}
                             style={{ opacity: imgErrors[activeImage] ? 1 : 0, transition: 'opacity 0.3s' }}
@@ -276,20 +257,30 @@ function ProjectModal({ project, onClose }) {
                                 key={activeImage}
                                 src={activeImage}
                                 alt={`${project.title} screenshot`}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 onError={() => handleImgError(activeImage)}
                             />
                         )}
+                        {!imgErrors[activeImage] && (
+                            <div className="absolute bottom-3 right-3 text-[10px] font-semibold tracking-wide uppercase px-2 py-1 rounded-md bg-black/60 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                    <line x1="11" y1="8" x2="11" y2="14" />
+                                    <line x1="8" y1="11" x2="14" y2="11" />
+                                </svg>
+                                Click to expand
+                            </div>
+                        )}
                     </div>
 
-                    {/* Thumbnail strip */}
                     {project.images.length > 1 && (
                         <div className="flex gap-2 overflow-x-auto pb-1 project-modal-thumbs">
                             {project.images.map((img, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => setActiveImage(img)}
-                                    className={`project-modal-thumb flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === img ? 'border-current opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}
+                                    className={`project-modal-thumb flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === img ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
                                     style={{ borderColor: activeImage === img ? project.color : 'transparent' }}
                                     aria-label={`View image ${idx + 1}`}
                                 >
@@ -311,21 +302,25 @@ function ProjectModal({ project, onClose }) {
                     )}
                 </div>
 
-                {/* ── Project Details ── */}
                 <div className="px-5 pb-6">
-                    {/* Accent line */}
                     <div
                         className="h-[2px] w-12 rounded-full mb-4"
                         style={{ background: `linear-gradient(90deg, ${project.color}, transparent)` }}
                     />
 
-                    <h2 className="text-xl font-bold text-white mb-3">{project.title}</h2>
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                        <h2 className="text-xl font-bold text-white">{project.title}</h2>
+                        {total > 1 && (
+                            <span className="text-xs text-white/40 font-mono shrink-0 mt-1">
+                                {currentIndex + 1} / {total}
+                            </span>
+                        )}
+                    </div>
 
                     <p className="text-sm leading-relaxed text-[var(--color-text-muted)] mb-5">
                         {project.description}
                     </p>
 
-                    {/* Tech tags */}
                     <div className="flex flex-wrap gap-2">
                         {project.tech.map((t, idx) => (
                             <span
@@ -341,7 +336,25 @@ function ProjectModal({ project, onClose }) {
                             </span>
                         ))}
                     </div>
+
+                    <p className="text-[11px] text-white/30 mt-6 hidden md:flex items-center gap-2 justify-center">
+                        <span className="kbd">←</span>
+                        <span className="kbd">→</span>
+                        <span>navigate</span>
+                        <span className="kbd">Esc</span>
+                        <span>close</span>
+                    </p>
                 </div>
+
+                <AnimatePresence>
+                    {lightboxOpen && !imgErrors[activeImage] && (
+                        <Lightbox
+                            src={activeImage}
+                            alt={project.title}
+                            onClose={() => setLightboxOpen(false)}
+                        />
+                    )}
+                </AnimatePresence>
             </motion.div>
         </motion.div>
     );
@@ -352,58 +365,128 @@ function ProjectModal({ project, onClose }) {
 export default function Projects() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: '-60px' });
-    const [selectedProject, setSelectedProject] = useState(null);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+    const [activeCategory, setActiveCategory] = useState('All');
 
-    const handleOpen = useCallback((project) => {
-        setSelectedProject(project);
-    }, []);
+    const filtered = useMemo(
+        () =>
+            activeCategory === 'All'
+                ? projects
+                : projects.filter((p) => p.category === activeCategory),
+        [activeCategory]
+    );
 
-    const handleClose = useCallback(() => {
-        setSelectedProject(null);
-    }, []);
+    const selectedProject = selectedIndex !== null ? filtered[selectedIndex] : null;
+
+    const handleOpen = useCallback(
+        (project) => {
+            const idx = filtered.findIndex((p) => p.slug === project.slug);
+            setSelectedIndex(idx >= 0 ? idx : 0);
+        },
+        [filtered]
+    );
+
+    const handleClose = useCallback(() => setSelectedIndex(null), []);
+
+    const handleNext = useCallback(() => {
+        setSelectedIndex((i) => (i === null ? 0 : (i + 1) % filtered.length));
+    }, [filtered.length]);
+
+    const handlePrev = useCallback(() => {
+        setSelectedIndex((i) =>
+            i === null ? 0 : (i - 1 + filtered.length) % filtered.length
+        );
+    }, [filtered.length]);
 
     return (
         <section id="projects" className="section-wrapper relative overflow-hidden" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-            <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#22d3ee]/5 rounded-full blur-[120px] -z-10" />
-            <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-[#a855f7]/5 rounded-full blur-[100px] -z-10" />
+            <div
+                className="absolute top-1/4 right-0 w-96 h-96 rounded-full blur-[120px] -z-10"
+                style={{ background: 'rgba(var(--accent-3-rgb), 0.06)' }}
+            />
+            <div
+                className="absolute bottom-1/4 left-0 w-80 h-80 rounded-full blur-[100px] -z-10"
+                style={{ background: 'rgba(var(--accent-2-rgb), 0.06)' }}
+            />
 
             <div className="section-container">
+                <div ref={ref}>
+                    <AnimatedHeading
+                        eyebrow="Featured Work"
+                        title="Recent Projects"
+                        description="A selection of projects that showcase my development capabilities. Click any project to view details."
+                    />
+                </div>
+
+                {/* Category filter chips */}
                 <motion.div
-                    ref={ref}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="section-header"
+                    transition={{ delay: 0.15, duration: 0.5 }}
+                    className="flex flex-wrap justify-center gap-2"
+                    role="tablist"
+                    aria-label="Filter projects by category"
                 >
-                    <span className="section-subtitle">Featured Work</span>
-                    <h2 className="type-h2 text-[var(--color-text-primary)]">Recent Projects</h2>
-                    <div className="section-divider mt-2" />
-                    <p className="section-description type-body mt-4">
-                        A selection of projects that showcase my development capabilities. Click any project to view details.
-                    </p>
+                    {categories.map((cat) => {
+                        const active = cat === activeCategory;
+                        return (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveCategory(cat)}
+                                role="tab"
+                                aria-selected={active}
+                                className={`relative px-4 py-2 rounded-full text-xs font-semibold tracking-wide uppercase transition-colors duration-200 ${
+                                    active ? 'text-white' : 'text-[#9898a8] hover:text-white'
+                                }`}
+                            >
+                                {active && (
+                                    <motion.span
+                                        layoutId="projectFilterPill"
+                                        className="absolute inset-0 rounded-full"
+                                        style={{
+                                            background:
+                                                'linear-gradient(135deg, var(--accent), var(--accent-2))',
+                                        }}
+                                        transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                                    />
+                                )}
+                                <span className="relative z-10">{cat}</span>
+                            </button>
+                        );
+                    })}
                 </motion.div>
 
-                {/* 4-column grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                    {projects.map((p, i) => (
-                        <ProjectThumbnail
-                            key={p.slug}
-                            project={p}
-                            index={i}
-                            isInView={isInView}
-                            onOpen={handleOpen}
-                        />
-                    ))}
+                    <AnimatePresence mode="popLayout">
+                        {filtered.map((p, i) => (
+                            <ProjectThumbnail
+                                key={p.slug}
+                                project={p}
+                                index={i}
+                                isInView={isInView}
+                                onOpen={handleOpen}
+                            />
+                        ))}
+                    </AnimatePresence>
                 </div>
+
+                {filtered.length === 0 && (
+                    <p className="text-center text-[#9898a8] text-sm">
+                        No projects in this category yet.
+                    </p>
+                )}
             </div>
 
-            {/* Modal */}
             <AnimatePresence>
                 {selectedProject && (
                     <ProjectModal
                         key={selectedProject.slug}
                         project={selectedProject}
+                        currentIndex={selectedIndex}
+                        total={filtered.length}
                         onClose={handleClose}
+                        onNext={handleNext}
+                        onPrev={handlePrev}
                     />
                 )}
             </AnimatePresence>

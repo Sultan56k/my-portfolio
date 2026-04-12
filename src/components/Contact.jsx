@@ -1,6 +1,8 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
+import AnimatedHeading from './AnimatedHeading';
+import { useToast } from '../context/ToastContext';
 
 /*
  * CONTACT FORM SETUP — EmailJS
@@ -22,6 +24,7 @@ const contactLinks = [
         label: 'Email',
         value: '244msultan@gmail.com',
         href: 'mailto:244msultan@gmail.com',
+        copyable: true,
         color: '#6366f1',
         icon: (
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -33,6 +36,7 @@ const contactLinks = [
         label: 'Phone',
         value: '+92 307 8873362',
         href: 'tel:+923078873362',
+        copyable: true,
         color: '#22d3ee',
         icon: (
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -73,7 +77,9 @@ function FormInput({ label, type = 'text', placeholder, isTextarea, name, value,
             <label htmlFor={name} className="text-xs font-bold text-[#9898a8] uppercase tracking-wider block">
                 {label}
             </label>
-            <div className={`relative rounded-lg transition-all duration-300 ${focused ? 'ring-2 ring-[#6366f1]/20' : ''}`}>
+            <div className={`relative rounded-lg transition-all duration-300 ${focused ? 'ring-2' : ''}`}
+                style={focused ? { '--tw-ring-color': 'rgba(var(--accent-rgb), 0.2)', boxShadow: '0 0 0 2px rgba(var(--accent-rgb), 0.2)' } : undefined}
+            >
                 <Component
                     id={name}
                     name={name}
@@ -86,10 +92,49 @@ function FormInput({ label, type = 'text', placeholder, isTextarea, name, value,
                     rows={isTextarea ? 5 : undefined}
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
-                    className={`w-full bg-[#13131a] border border-[#2a2a3a] rounded-lg px-4 py-3.5 text-white placeholder-[#52525b] focus:border-[#6366f1] focus:outline-none transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed ${isTextarea ? 'resize-none' : ''}`}
+                    className={`w-full bg-[#13131a] border border-[#2a2a3a] rounded-lg px-4 py-3.5 text-white placeholder-[#52525b] focus:outline-none transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed ${isTextarea ? 'resize-none' : ''}`}
+                    style={focused ? { borderColor: 'var(--accent)' } : undefined}
                 />
             </div>
         </div>
+    );
+}
+
+function CopyButton({ value, label }) {
+    const [copied, setCopied] = useState(false);
+    const toast = useToast();
+
+    const handleCopy = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+            await navigator.clipboard.writeText(value);
+            setCopied(true);
+            toast.show(`${label} copied to clipboard`, { type: 'success', duration: 2500 });
+            setTimeout(() => setCopied(false), 1600);
+        } catch {
+            toast.show("Couldn't copy — please copy manually", { type: 'error' });
+        }
+    };
+
+    return (
+        <button
+            type="button"
+            onClick={handleCopy}
+            className="icon-btn"
+            aria-label={`Copy ${label}`}
+        >
+            {copied ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+            ) : (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+            )}
+        </button>
     );
 }
 
@@ -97,8 +142,8 @@ export default function Contact() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: '-100px' });
     const [form, setForm] = useState({ name: '', email: '', message: '' });
-    const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'success' | 'error'
-    const [errorMsg, setErrorMsg] = useState('');
+    const [status, setStatus] = useState('idle');
+    const toast = useToast();
 
     const handleChange = (e) => {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -109,8 +154,7 @@ export default function Contact() {
         if (status === 'sending') return;
 
         if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-            setStatus('error');
-            setErrorMsg('Please fill in all fields before sending.');
+            toast.show('Please fill in all fields before sending.', { type: 'error' });
             return;
         }
 
@@ -119,13 +163,14 @@ export default function Contact() {
         const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
         if (!serviceId || !templateId || !publicKey) {
-            setStatus('error');
-            setErrorMsg('Email service is not configured yet. Please email me directly at 244msultan@gmail.com.');
+            toast.show(
+                'Email service is not configured yet. Please email me directly at 244msultan@gmail.com.',
+                { type: 'error', duration: 6000 }
+            );
             return;
         }
 
         setStatus('sending');
-        setErrorMsg('');
         try {
             await emailjs.send(
                 serviceId,
@@ -139,38 +184,40 @@ export default function Contact() {
                 { publicKey }
             );
             setStatus('success');
+            toast.show("Message sent — I'll get back to you soon.", { type: 'success' });
             setForm({ name: '', email: '', message: '' });
-            setTimeout(() => setStatus('idle'), 4000);
+            setTimeout(() => setStatus('idle'), 3000);
         } catch (err) {
             console.error('EmailJS send failed:', err);
-            setStatus('error');
-            setErrorMsg('Something went wrong. Please try again or email me directly.');
+            setStatus('idle');
+            toast.show('Something went wrong. Please try again or email me directly.', {
+                type: 'error',
+                duration: 5000,
+            });
         }
     };
 
     return (
         <section id="contact" className="section-wrapper relative overflow-hidden">
-            <div className="absolute top-1/2 left-0 w-96 h-96 bg-[#6366f1]/5 rounded-full blur-[100px] -z-10" />
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#22d3ee]/5 rounded-full blur-[100px] -z-10" />
+            <div
+                className="absolute top-1/2 left-0 w-96 h-96 rounded-full blur-[100px] -z-10"
+                style={{ background: 'rgba(var(--accent-rgb), 0.05)' }}
+            />
+            <div
+                className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-[100px] -z-10"
+                style={{ background: 'rgba(var(--accent-3-rgb), 0.05)' }}
+            />
 
             <div className="section-container">
-                {/* Header */}
-                <motion.div
-                    ref={ref}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    className="section-header"
-                >
-                    <span className="section-subtitle">Contact Me</span>
-                    <h2 className="type-h2 text-white">Let's Connect</h2>
-                    <div className="section-divider mt-2" />
-                    <p className="section-description text-center mt-4">
-                        Have a project or opportunity? I'd love to hear from you.
-                    </p>
-                </motion.div>
+                <div ref={ref}>
+                    <AnimatedHeading
+                        eyebrow="Contact Me"
+                        title="Let's Connect"
+                        description="Have a project or opportunity? I'd love to hear from you."
+                    />
+                </div>
 
                 <div className="grid lg:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto w-full">
-                    {/* Form */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -212,8 +259,8 @@ export default function Contact() {
                                 type="submit"
                                 disabled={status === 'sending' || status === 'success'}
                                 className="btn-primary mt-2 w-full gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
-                                whileHover={status === 'idle' || status === 'error' ? { scale: 1.01 } : {}}
-                                whileTap={status === 'idle' || status === 'error' ? { scale: 0.98 } : {}}
+                                whileHover={status === 'idle' ? { scale: 1.01 } : {}}
+                                whileTap={status === 'idle' ? { scale: 0.98 } : {}}
                             >
                                 {status === 'sending' && (
                                     <>
@@ -231,7 +278,7 @@ export default function Contact() {
                                         Message Sent!
                                     </>
                                 )}
-                                {(status === 'idle' || status === 'error') && (
+                                {status === 'idle' && (
                                     <>
                                         Send Message
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -240,16 +287,9 @@ export default function Contact() {
                                     </>
                                 )}
                             </motion.button>
-
-                            {status === 'error' && errorMsg && (
-                                <p className="text-sm text-red-400/90 text-center -mt-2" role="alert">
-                                    {errorMsg}
-                                </p>
-                            )}
                         </form>
                     </motion.div>
 
-                    {/* Socials */}
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -260,11 +300,8 @@ export default function Contact() {
                             <h3 className="text-lg sm:text-xl font-bold text-white mb-5 sm:mb-8">Contact Information</h3>
                             <div className="flex flex-col gap-3 sm:gap-4">
                                 {contactLinks.map((link, i) => (
-                                    <motion.a
+                                    <motion.div
                                         key={i}
-                                        href={link.href}
-                                        target={link.href.startsWith('http') ? '_blank' : undefined}
-                                        rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={isInView ? { opacity: 1, x: 0 } : {}}
                                         transition={{ delay: 0.4 + i * 0.1 }}
@@ -273,50 +310,85 @@ export default function Contact() {
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.borderColor = `${link.color}50`;
                                             e.currentTarget.style.backgroundColor = `${link.color}08`;
-                                            const icon = e.currentTarget.querySelector('.contact-icon');
-                                            if (icon) icon.style.backgroundColor = link.color;
                                         }}
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.borderColor = '#2a2a3a';
                                             e.currentTarget.style.backgroundColor = '#1a1a24';
-                                            const icon = e.currentTarget.querySelector('.contact-icon');
-                                            if (icon) icon.style.backgroundColor = '#2a2a3a';
                                         }}
                                     >
-                                        <div
-                                            className="contact-icon w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#2a2a3a] flex items-center justify-center transition-all duration-300 text-[#9898a8] group-hover:text-white shrink-0"
+                                        <a
+                                            href={link.href}
+                                            target={link.href.startsWith('http') ? '_blank' : undefined}
+                                            rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                            className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0"
+                                            aria-label={`${link.label}: ${link.value}`}
                                         >
-                                            {link.icon}
+                                            <div
+                                                className="contact-icon w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#2a2a3a] flex items-center justify-center transition-all duration-300 text-[#9898a8] group-hover:text-white shrink-0"
+                                            >
+                                                {link.icon}
+                                            </div>
+                                            <div className="flex-grow min-w-0">
+                                                <p className="text-xs text-[#9898a8] font-bold uppercase tracking-wider mb-0.5">{link.label}</p>
+                                                <p className="text-white font-medium text-sm md:text-base break-all">{link.value}</p>
+                                            </div>
+                                        </a>
+                                        <div className="flex items-center gap-1 shrink-0">
+                                            {link.copyable && <CopyButton value={link.value} label={link.label} />}
+                                            <a
+                                                href={link.href}
+                                                target={link.href.startsWith('http') ? '_blank' : undefined}
+                                                rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                                className="text-[#9898a8] group-hover:text-white transition-all duration-300 group-hover:translate-x-1"
+                                                aria-hidden="true"
+                                                tabIndex={-1}
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M3 8h10M9 4l4 4-4 4" />
+                                                </svg>
+                                            </a>
                                         </div>
-                                        <div className="flex-grow">
-                                            <p className="text-xs text-[#9898a8] font-bold uppercase tracking-wider mb-0.5">{link.label}</p>
-                                            <p className="text-white font-medium text-sm md:text-base break-all">{link.value}</p>
-                                        </div>
-                                        <div className="text-[#9898a8] group-hover:text-white transition-all duration-300 group-hover:translate-x-1">
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M3 8h10M9 4l4 4-4 4" />
-                                            </svg>
-                                        </div>
-                                    </motion.a>
+                                    </motion.div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Availability Badge */}
                         <motion.div
-                            className="p-4 sm:p-5 rounded-xl border border-[#22d3ee]/30 bg-[#22d3ee]/5 flex items-center gap-3 sm:gap-4"
+                            className="p-4 sm:p-5 rounded-xl flex items-center gap-3 sm:gap-4"
+                            style={{
+                                borderColor: 'rgba(var(--accent-3-rgb), 0.3)',
+                                background: 'rgba(var(--accent-3-rgb), 0.05)',
+                                borderWidth: '1px',
+                                borderStyle: 'solid',
+                            }}
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ delay: 0.8 }}
-                            whileHover={{ scale: 1.01, borderColor: 'rgba(34, 211, 238, 0.5)' }}
+                            whileHover={{ scale: 1.01 }}
                         >
                             <div className="relative">
-                                <div className="w-3 h-3 bg-[#22d3ee] rounded-full" />
-                                <div className="absolute inset-0 w-3 h-3 bg-[#22d3ee] rounded-full animate-ping" />
+                                <div
+                                    className="w-3 h-3 rounded-full"
+                                    style={{ background: 'var(--accent-3)' }}
+                                />
+                                <div
+                                    className="absolute inset-0 w-3 h-3 rounded-full animate-ping"
+                                    style={{ background: 'var(--accent-3)' }}
+                                />
                             </div>
                             <div>
-                                <p className="text-[#22d3ee] font-semibold text-xs sm:text-sm">Available for new opportunities</p>
-                                <p className="text-[#22d3ee]/60 text-[10px] sm:text-xs mt-0.5">Open to full-time & freelance projects</p>
+                                <p
+                                    className="font-semibold text-xs sm:text-sm"
+                                    style={{ color: 'var(--accent-3)' }}
+                                >
+                                    Available for new opportunities
+                                </p>
+                                <p
+                                    className="text-[10px] sm:text-xs mt-0.5"
+                                    style={{ color: 'rgba(var(--accent-3-rgb), 0.65)' }}
+                                >
+                                    Open to full-time &amp; freelance projects
+                                </p>
                             </div>
                         </motion.div>
                     </motion.div>

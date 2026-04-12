@@ -1,20 +1,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-
-const experiences = [
-    {
-        role: "Web & Mobile Developer",
-        company: "Weblocks",
-        period: "2024 - Present",
-        desc: "Developing production-level applications. Collaborating with cross-functional teams to deliver high-quality software solutions.",
-        tags: ["React", "React Native", "Teamwork"],
-        highlights: [
-            "Built and shipped multiple client-facing web applications",
-            "Collaborated in agile sprints with designers and backend teams",
-            "Optimized app performance and load times significantly"
-        ]
-    }
-];
+import AnimatedHeading from './AnimatedHeading';
+import { experiences } from '../data/experience';
 
 export default function Experience() {
     const ref = useRef(null);
@@ -26,17 +13,12 @@ export default function Experience() {
             <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#a855f7]/5 rounded-full blur-[80px] -z-10" />
 
             <div className="section-container">
-                {/* Header */}
-                <motion.div
-                    ref={ref}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    className="section-header"
-                >
-                    <span className="section-subtitle">Work Experience</span>
-                    <h2 className="type-h2 text-white">Where I've Worked</h2>
-                    <div className="section-divider mt-2" />
-                </motion.div>
+                <div ref={ref}>
+                    <AnimatedHeading
+                        eyebrow="Work Experience"
+                        title="Where I've Worked"
+                    />
+                </div>
 
                 {/* Timeline */}
                 <div className="max-w-3xl mx-auto w-full">

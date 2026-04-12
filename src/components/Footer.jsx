@@ -1,5 +1,8 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import MagneticButton from './MagneticButton';
+import { footerLinks } from '../data/nav';
+import { scrollToTarget } from '../hooks/useLenis';
 
 const socialLinks = [
     {
@@ -31,17 +34,20 @@ const socialLinks = [
     },
 ];
 
-const footerLinks = [
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Contact', href: '#contact' },
-];
-
 export default function Footer() {
     const currentYear = new Date().getFullYear();
     const ctaRef = useRef(null);
     const isInView = useInView(ctaRef, { once: true, margin: '-50px' });
+
+    const handleAnchor = (e, href) => {
+        e.preventDefault();
+        scrollToTarget(href.slice(1));
+    };
+
+    const handleLogo = (e) => {
+        e.preventDefault();
+        scrollToTarget('top');
+    };
 
     return (
         <footer className="relative">
@@ -55,17 +61,25 @@ export default function Footer() {
                 >
                     {/* Solid background + gradient overlay */}
                     <div className="absolute inset-0 bg-[#13131a] rounded-2xl" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#6366f1]/15 via-transparent to-[#a855f7]/15 rounded-2xl" />
+                    <div
+                        className="absolute inset-0 rounded-2xl"
+                        style={{
+                            background:
+                                'linear-gradient(135deg, rgba(var(--accent-rgb), 0.15), transparent, rgba(var(--accent-2-rgb), 0.15))',
+                        }}
+                    />
                     <div className="absolute inset-0 border border-[#2a2a3a]/70 rounded-2xl" />
 
                     {/* Animated orbs */}
                     <motion.div
-                        className="absolute -top-16 left-1/4 w-64 h-64 bg-[#6366f1]/10 rounded-full blur-[80px]"
+                        className="absolute -top-16 left-1/4 w-64 h-64 rounded-full blur-[80px]"
+                        style={{ background: 'rgba(var(--accent-rgb), 0.12)' }}
                         animate={{ x: [0, 20, 0], y: [0, -10, 0] }}
                         transition={{ duration: 6, repeat: Infinity }}
                     />
                     <motion.div
-                        className="absolute -bottom-16 right-1/4 w-64 h-64 bg-[#a855f7]/10 rounded-full blur-[80px]"
+                        className="absolute -bottom-16 right-1/4 w-64 h-64 rounded-full blur-[80px]"
+                        style={{ background: 'rgba(var(--accent-2-rgb), 0.12)' }}
                         animate={{ x: [0, -20, 0], y: [0, 10, 0] }}
                         transition={{ duration: 8, repeat: Infinity }}
                     />
@@ -73,7 +87,8 @@ export default function Footer() {
                     {/* Content */}
                     <div className="relative z-10 p-6 sm:p-8 md:p-14 lg:p-20 text-center">
                         <motion.p
-                            className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-[#6366f1] mb-3 sm:mb-5"
+                            className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase mb-3 sm:mb-5"
+                            style={{ color: 'var(--accent)' }}
                             initial={{ opacity: 0, y: 15 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ delay: 0.15 }}
@@ -107,18 +122,25 @@ export default function Footer() {
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ delay: 0.4 }}
                         >
-                            <a href="#contact" className="btn-primary gap-2">
+                            <MagneticButton
+                                href="#contact"
+                                className="btn-primary gap-2"
+                                onClick={(e) => handleAnchor(e, '#contact')}
+                            >
                                 Start a Conversation
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                     <path d="M3 8h10M9 4l4 4-4 4" />
                                 </svg>
-                            </a>
-                            <a href="mailto:244msultan@gmail.com" className="btn-secondary gap-2">
+                            </MagneticButton>
+                            <MagneticButton
+                                href="mailto:244msultan@gmail.com"
+                                className="btn-secondary gap-2"
+                            >
                                 Email Me
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                     <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                                 </svg>
-                            </a>
+                            </MagneticButton>
                         </motion.div>
                     </div>
                 </motion.div>
@@ -126,16 +148,25 @@ export default function Footer() {
 
             {/* Footer Content */}
             <div className="border-t border-[#2a2a3a]/50">
-                <div className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#6366f1]/30 to-transparent" />
+                <div
+                    className="absolute left-0 right-0 h-[1px]"
+                    style={{
+                        background:
+                            'linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.3), transparent)',
+                    }}
+                />
 
                 <div className="max-w-[1200px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
                     <div className="flex flex-col md:grid md:grid-cols-3 gap-6 sm:gap-8 items-center">
                         {/* Left: Logo & tagline */}
                         <div className="text-center md:text-left">
                             <motion.a
-                                href="#"
+                                href="#top"
+                                onClick={handleLogo}
                                 className="text-2xl font-bold gradient-text inline-block"
                                 whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                aria-label="Back to top"
                             >
                                 MS
                             </motion.a>
@@ -146,10 +177,11 @@ export default function Footer() {
 
                         {/* Center: Nav links */}
                         <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-                            {footerLinks.map((link, i) => (
+                            {footerLinks.map((link) => (
                                 <a
-                                    key={i}
+                                    key={link.name}
                                     href={link.href}
+                                    onClick={(e) => handleAnchor(e, link.href)}
                                     className="text-[#9898a8] hover:text-white transition-colors text-xs sm:text-sm font-medium"
                                 >
                                     {link.name}
@@ -159,13 +191,22 @@ export default function Footer() {
 
                         {/* Right: Social icons */}
                         <div className="flex justify-center md:justify-end gap-3">
-                            {socialLinks.map((link, i) => (
+                            {socialLinks.map((link) => (
                                 <motion.a
-                                    key={i}
+                                    key={link.name}
                                     href={link.href}
                                     target={link.href.startsWith('http') ? '_blank' : undefined}
                                     rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                    className="w-10 h-10 rounded-lg bg-[#1a1a24] border border-[#2a2a3a] flex items-center justify-center text-[#9898a8] hover:text-white hover:border-[#6366f1] hover:bg-[#6366f1]/10 transition-all duration-300"
+                                    className="w-10 h-10 rounded-lg bg-[#1a1a24] border border-[#2a2a3a] flex items-center justify-center text-[#9898a8] hover:text-white transition-all duration-300"
+                                    style={{ '--hover-border': 'var(--accent)' }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderColor = 'var(--accent)';
+                                        e.currentTarget.style.backgroundColor = 'rgba(var(--accent-rgb), 0.1)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderColor = '#2a2a3a';
+                                        e.currentTarget.style.backgroundColor = '#1a1a24';
+                                    }}
                                     whileHover={{ y: -3 }}
                                     whileTap={{ scale: 0.9 }}
                                     aria-label={link.name}
@@ -182,7 +223,7 @@ export default function Footer() {
                             &copy; {currentYear} Muhammad Sultan. All rights reserved.
                         </p>
                         <p className="text-[#52525b] text-xs">
-                            Built with React, Tailwind CSS & Framer Motion
+                            Built with React, Tailwind CSS &amp; Framer Motion
                         </p>
                     </div>
                 </div>

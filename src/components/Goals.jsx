@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import AnimatedHeading from './AnimatedHeading';
 
 export default function Goals() {
     const ref = useRef(null);
@@ -10,17 +11,9 @@ export default function Goals() {
             <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#a855f7]/5 rounded-full blur-[100px] -z-10" />
 
             <div className="section-container">
-                {/* Header */}
-                <motion.div
-                    ref={ref}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    className="section-header"
-                >
-                    <span className="section-subtitle">Future Goals</span>
-                    <h2 className="type-h2 text-white">My Vision</h2>
-                    <div className="section-divider mt-2" />
-                </motion.div>
+                <div ref={ref}>
+                    <AnimatedHeading eyebrow="Future Goals" title="My Vision" />
+                </div>
 
                 {/* Content */}
                 <motion.div

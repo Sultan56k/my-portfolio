@@ -1,5 +1,6 @@
 import { motion, useInView, animate } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
+import AnimatedHeading from './AnimatedHeading';
 
 function AnimatedCounter({ target, suffix = '', duration = 2 }) {
     const [count, setCount] = useState(0);
@@ -55,20 +56,13 @@ export default function About() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#6366f1]/5 rounded-full blur-[100px] -z-10" />
 
             <div className="section-container">
-                {/* Header */}
-                <motion.div
-                    ref={ref}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    className="section-header"
-                >
-                    <span className="section-subtitle">About Me</span>
-                    <h2 className="type-h2 text-white">Who I Am</h2>
-                    <div className="section-divider mt-2" />
-                    <p className="section-description text-center mt-4">
-                        Bridging the gap between conceptual design and technical implementation.
-                    </p>
-                </motion.div>
+                <div ref={ref}>
+                    <AnimatedHeading
+                        eyebrow="About Me"
+                        title="Who I Am"
+                        description="Bridging the gap between conceptual design and technical implementation."
+                    />
+                </div>
 
                 {/* Content */}
                 <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-start">
@@ -116,15 +110,24 @@ export default function About() {
                             <motion.div
                                 key={i}
                                 variants={itemVariants}
-                                className="card-base card-glow card-inner-glow bg-[#13131a] text-center justify-center py-8 group"
-                                whileHover={{ scale: 1.03 }}
+                                className="card-base card-glow card-inner-glow shine bg-[#13131a] text-center justify-center py-8 group relative"
+                                whileHover={{ scale: 1.04, rotateZ: (i % 2 ? 0.6 : -0.6) }}
                             >
-                                <span className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br ${stat.gradient} mb-1 block`}>
+                                <span
+                                    className="block text-4xl font-black mb-1 stat-ticker"
+                                >
                                     <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                                 </span>
                                 <span className="text-xs font-semibold text-[#9898a8] uppercase tracking-wider group-hover:text-[#c4c4cc] transition-colors">
                                     {stat.label}
                                 </span>
+                                <div
+                                    className="absolute inset-x-8 -bottom-px h-[1px] opacity-0 group-hover:opacity-100 transition-opacity"
+                                    style={{
+                                        background:
+                                            'linear-gradient(90deg, transparent, var(--accent), transparent)',
+                                    }}
+                                />
                             </motion.div>
                         ))}
                     </motion.div>
