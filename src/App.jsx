@@ -3,8 +3,6 @@ import { Analytics } from '@vercel/analytics/react';
 import Preloader from './components/Preloader';
 import ScrollProgress from './components/ScrollProgress';
 import ParticleField from './components/ParticleField';
-import CustomCursor from './components/CustomCursor';
-import CursorTrail from './components/CursorTrail';
 import BackToTop from './components/BackToTop';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -43,8 +41,6 @@ function Site() {
 
             <ScrollProgress />
             <ParticleField />
-            <CustomCursor />
-            <CursorTrail />
             <Navbar />
 
             <main className="relative z-10">

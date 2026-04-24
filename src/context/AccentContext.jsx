@@ -9,6 +9,13 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 
 export const ACCENT_PRESETS = [
     {
+        id: 'red',
+        name: 'Red',
+        accent: '#ef4444',
+        accent2: '#f43f5e',
+        accent3: '#f97316',
+    },
+    {
         id: 'indigo',
         name: 'Indigo',
         accent: '#6366f1',
@@ -71,8 +78,8 @@ const AccentContext = createContext(null);
 
 export function AccentProvider({ children }) {
     const [accentId, setAccentId] = useState(() => {
-        if (typeof window === 'undefined') return 'indigo';
-        return localStorage.getItem(STORAGE_KEY) || 'indigo';
+        if (typeof window === 'undefined') return 'red';
+        return localStorage.getItem(STORAGE_KEY) || 'red';
     });
 
     const preset = useMemo(

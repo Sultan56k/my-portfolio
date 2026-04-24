@@ -765,17 +765,6 @@ textarea {
   cursor: pointer;
 }
 
-/* Custom cursor - hide default on desktop */
-@media (hover: hover) and (pointer: fine) {
-  body {
-    cursor: none;
-  }
-
-  a, button, input, textarea, select {
-    cursor: none;
-  }
-}
-
 /* Smooth section separator */
 .section-separator {
   height: 1px;
