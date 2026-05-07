@@ -711,17 +711,61 @@ textarea {
   animation: none;
 }
 
-/* ─── Project Thumbnail Grid ─────────────────────────────────────── */
+/* ─── Project Thumbnail Grid (legacy) ───────────────────────────── */
 
 .project-thumbnail {
   position: relative;
-  border-radius: 0.75rem;
-  overflow: hidden;
+  border-radius: 1rem;
   outline: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-thumbnail:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(var(--accent-rgb), 0.18);
 }
 
 .project-thumbnail:focus-visible {
   box-shadow: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px rgba(var(--accent-rgb), 0.5);
+}
+
+/* ─── Redesigned Project Card v2 ────────────────────────────────── */
+
+.project-card-v2 {
+  position: relative;
+  border-radius: 1rem;
+  outline: none;
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  /* top border shared with image area */
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.project-card-v2:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 20px 50px -12px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(var(--accent-rgb), 0.2),
+    0 0 30px -15px rgba(var(--accent-rgb), 0.25);
+}
+
+.project-card-v2:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px rgba(var(--accent-rgb), 0.5);
+}
+
+/* Image zone rounded corners tied to card top */
+.project-card-v2 > div:first-child {
+  border-top-left-radius: calc(1rem - 1px);
+  border-top-right-radius: calc(1rem - 1px);
+}
+
+@media (hover: none) {
+  .project-card-v2:hover {
+    transform: none;
+  }
 }
 
 /* ─── Project Modal ──────────────────────────────────────────────── */
@@ -763,6 +807,12 @@ textarea {
 .project-modal-thumb {
   position: relative;
   cursor: pointer;
+}
+
+/* Hide floating UI when a project modal is open so they don't block clicks */
+body.project-modal-open .shortcut-hint-pill,
+body.project-modal-open [aria-label="Back to top"] {
+  display: none !important;
 }
 
 /* Smooth section separator */

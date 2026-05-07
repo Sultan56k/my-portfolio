@@ -77,7 +77,7 @@ export default function ShortcutHints() {
                 transition={{ delay: 2 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="hidden md:flex fixed bottom-5 left-1/2 -translate-x-1/2 z-40 items-center gap-2 px-3 py-1.5 rounded-full bg-[#0b0b0f]/80 border border-[#2a2a3a] backdrop-blur-md text-xs text-[#aeb0be] hover:text-white"
+                className="shortcut-hint-pill hidden md:flex fixed bottom-5 right-20 sm:bottom-8 sm:right-24 z-40 items-center gap-2 px-3 py-1.5 rounded-full bg-[#0b0b0f]/80 border border-[#2a2a3a] backdrop-blur-md text-xs text-[#aeb0be] hover:text-white"
                 aria-label="Show keyboard shortcuts"
             >
                 <span className="kbd">?</span>
