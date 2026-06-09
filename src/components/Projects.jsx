@@ -337,14 +337,21 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
                 <div className="flex flex-col md:flex-row md:gap-0">
                     {/* LEFT: image viewer */}
                     <div
-                        className="md:w-[52%] md:sticky md:top-[53px] md:self-start md:max-h-[calc(90vh-53px)] md:overflow-y-auto"
+                        className="md:w-[52%] md:sticky md:top-[53px] md:self-start"
                         style={{ background: 'rgba(8,8,14,1)' }}
                     >
-                        {/* Image viewer — nav buttons are inside so they inherit the same stacking context */}
-                        <div className="relative w-full" style={{ background: `${project.color}08` }}>
-                            {/* The swipeable image */}
+                        {/* Image stage — fixed, viewport-bounded height so the image never
+                            overflows and the slider arrows stay centered & always reachable */}
+                        <div
+                            className="relative w-full flex items-center justify-center overflow-hidden"
+                            style={{
+                                background: `${project.color}08`,
+                                height: 'min(62vh, 540px)',
+                            }}
+                        >
+                            {/* The swipeable image (contained within the stage) */}
                             <motion.div
-                                className="w-full select-none cursor-zoom-in"
+                                className="w-full h-full flex items-center justify-center select-none cursor-zoom-in px-2"
                                 onClick={() => !imgErrors[activeImage] && setLightboxOpen(true)}
                                 drag={project.images.length > 1 ? 'x' : false}
                                 dragConstraints={{ left: 0, right: 0 }}
@@ -359,12 +366,12 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
                                         key={activeImage}
                                         src={activeImage}
                                         alt={`${project.title} screenshot`}
-                                        className="w-full h-auto block pointer-events-none"
+                                        className="max-w-full max-h-full w-auto h-auto object-contain block pointer-events-none"
                                         draggable={false}
                                         onError={() => handleImgError(activeImage)}
                                     />
                                 ) : (
-                                    <div className={`w-full aspect-[9/16] flex items-center justify-center bg-gradient-to-br ${project.gradient}`}>
+                                    <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${project.gradient}`}>
                                         <svg className="w-12 h-12 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
                                         </svg>
@@ -372,26 +379,28 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
                                 )}
                             </motion.div>
 
-                            {/* Image navigation — shown on mobile only (desktop uses thumbnail strip below) */}
+                            {/* Image slider — centered arrows + counter + dots.
+                                Shown on BOTH desktop and mobile so the next image is
+                                always one tap away without scrolling. */}
                             {project.images.length > 1 && (
                                 <>
                                     {/* Counter badge — top left */}
                                     <div
-                                        className="md:hidden absolute top-3 left-3 z-40 text-[11px] font-bold text-white px-2.5 py-1 rounded-lg pointer-events-none"
-                                        style={{ background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(255,255,255,0.18)' }}
+                                        className="absolute top-3 left-3 z-40 text-[11px] font-bold text-white px-2.5 py-1 rounded-lg pointer-events-none"
+                                        style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.18)' }}
                                     >
                                         {imgIndex + 1} / {project.images.length}
                                     </div>
 
-                                    {/* Prev button — floats over left edge of image */}
+                                    {/* Prev button — vertically centered on left edge */}
                                     <button
-                                        className="md:hidden absolute left-3 bottom-14 z-40 w-12 h-12 rounded-full flex items-center justify-center"
+                                        className="absolute left-2.5 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full flex items-center justify-center transition-transform duration-150 hover:scale-110 active:scale-95"
                                         style={{
                                             background: project.color,
-                                            boxShadow: `0 0 0 3px rgba(255,255,255,0.25), 0 6px 24px ${project.color}cc`,
+                                            boxShadow: `0 0 0 3px rgba(255,255,255,0.22), 0 6px 22px ${project.color}cc`,
                                             color: '#fff',
                                         }}
-                                        onClick={goPrevImg}
+                                        onClick={(e) => { e.stopPropagation(); goPrevImg(); }}
                                         aria-label="Previous image"
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -399,15 +408,15 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
                                         </svg>
                                     </button>
 
-                                    {/* Next button — floats over right edge of image */}
+                                    {/* Next button — vertically centered on right edge */}
                                     <button
-                                        className="md:hidden absolute right-3 bottom-14 z-40 w-12 h-12 rounded-full flex items-center justify-center"
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full flex items-center justify-center transition-transform duration-150 hover:scale-110 active:scale-95"
                                         style={{
                                             background: project.color,
-                                            boxShadow: `0 0 0 3px rgba(255,255,255,0.25), 0 6px 24px ${project.color}cc`,
+                                            boxShadow: `0 0 0 3px rgba(255,255,255,0.22), 0 6px 22px ${project.color}cc`,
                                             color: '#fff',
                                         }}
-                                        onClick={goNextImg}
+                                        onClick={(e) => { e.stopPropagation(); goNextImg(); }}
                                         aria-label="Next image"
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -417,8 +426,8 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
 
                                     {/* Dot indicators — bottom center */}
                                     <div
-                                        className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-40 flex gap-2 px-3 py-1.5 rounded-full pointer-events-none"
-                                        style={{ background: 'rgba(0,0,0,0.65)' }}
+                                        className="absolute bottom-3 left-1/2 -translate-x-1/2 z-40 flex gap-2 px-3 py-1.5 rounded-full pointer-events-none"
+                                        style={{ background: 'rgba(0,0,0,0.6)' }}
                                     >
                                         {project.images.map((img, idx) => (
                                             <span
@@ -436,7 +445,7 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
                             )}
                         </div>
 
-                        {/* Thumbnail strip */}
+                        {/* Thumbnail strip — desktop quick-jump */}
                         {project.images.length > 1 && (
                             <div className="hidden md:flex gap-2 p-3 overflow-x-auto project-modal-thumbs border-t border-white/5">
                                 {project.images.map((img, idx) => (
