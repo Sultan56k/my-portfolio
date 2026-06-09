@@ -132,8 +132,13 @@ export const projects = [
         title: 'Attendance Tracker',
         slug: 'attendance-tracker',
         category: 'Mobile',
-        coverImage: card('1506784983877-45594efa4cbe'),
-        images: [wide('1506784983877-45594efa4cbe')],
+        coverImage: '/projects/attendance-tracker/cover.png',
+        images: [
+            '/projects/attendance-tracker/01.png',
+            '/projects/attendance-tracker/02.png',
+            '/projects/attendance-tracker/03.png',
+            '/projects/attendance-tracker/04.png',
+        ],
         description:
             'A streamlined attendance management app designed to replace manual roll-call workflows for classrooms and teams. Features one-tap check-in, date-based filtering, and detailed reports with CSV export for administrators. Built with React Native and Firebase, it offers real-time synchronization across devices and a clean, role-aware dashboard that minimizes friction for both students and supervisors.',
         tech: ['React Native', 'Firebase', 'Real-time Sync', 'CSV Export'],
