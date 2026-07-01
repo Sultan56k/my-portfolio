@@ -123,11 +123,40 @@ function ProjectCard({ project, index, isInView, onOpen }) {
             >
                 {/* Title */}
                 <h3
-                    className="text-sm sm:text-[15px] font-semibold text-white leading-snug line-clamp-2 mb-2.5"
+                    className="text-sm sm:text-[15px] font-semibold text-white leading-snug line-clamp-2 mb-2"
                     title={project.title}
                 >
                     {project.title}
                 </h3>
+
+                {/* Client / role meta */}
+                {(project.client || project.role) && (
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2.5 text-[10px] font-medium">
+                        {project.client && (
+                            <span className="inline-flex items-center gap-1 text-white/50">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                                Client · {project.client}
+                            </span>
+                        )}
+                        {project.role && (
+                            <span
+                                className="inline-flex items-center px-1.5 py-0.5 rounded-md"
+                                style={{ background: `${project.color}14`, color: 'rgba(200,200,220,0.7)' }}
+                            >
+                                {project.role}
+                            </span>
+                        )}
+                        {project.liveUrl && (
+                            <span className="inline-flex items-center gap-1 text-emerald-300/80">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                Live
+                            </span>
+                        )}
+                    </div>
+                )}
 
                 {/* Description snippet */}
                 <p className="text-xs leading-relaxed text-white/45 line-clamp-2 mb-3.5 flex-1">
@@ -487,6 +516,30 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
                             {project.description}
                         </p>
 
+                        {/* Client / role meta */}
+                        {(project.client || project.role) && (
+                            <div className="flex flex-wrap gap-x-8 gap-y-3 mb-6">
+                                {project.client && (
+                                    <div>
+                                        <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">Client</p>
+                                        <p className="text-sm font-semibold text-white/85 flex items-center gap-1.5">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={project.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z" />
+                                                <circle cx="12" cy="10" r="3" />
+                                            </svg>
+                                            {project.client}
+                                        </p>
+                                    </div>
+                                )}
+                                {project.role && (
+                                    <div>
+                                        <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-1">Role</p>
+                                        <p className="text-sm font-semibold text-white/85">{project.role}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Tech stack */}
                         <div className="mb-6">
                             <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-2.5">Tech Stack</p>
@@ -506,6 +559,29 @@ function ProjectModal({ project, onClose, onPrev, onNext, total, currentIndex })
                                 ))}
                             </div>
                         </div>
+
+                        {/* Live link — Play Store / website */}
+                        {project.liveUrl && (
+                            <a
+                                href={project.liveUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="group/live inline-flex items-center justify-center gap-2 w-full sm:w-auto h-11 px-5 mb-6 rounded-xl text-sm font-semibold text-white transition-transform duration-150 hover:scale-[1.02] active:scale-95"
+                                style={{
+                                    background: `linear-gradient(135deg, ${project.color}, ${project.color}cc)`,
+                                    boxShadow: `0 6px 22px ${project.color}55`,
+                                }}
+                            >
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.6-9.7L3.6 2.3zm11 8.4 2.9-2.9-9-5.1a1 1 0 0 0-.4-.1l6.5 8.1zm0 2.6-6.5 8.1a1 1 0 0 0 .4-.1l9-5.1-2.9-2.9zm5.6-3.2-2.4-1.4-3.1 3.1 3.1 3.1 2.4-1.4a1.5 1.5 0 0 0 0-3.4z" />
+                                </svg>
+                                {project.liveLabel || 'View Live'}
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 transition-transform duration-150 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5">
+                                    <path d="M7 17L17 7M7 7h10v10" />
+                                </svg>
+                            </a>
+                        )}
 
                         {/* Keyboard hint */}
                         <p className="text-[11px] text-white/30 hidden md:flex items-center gap-2 mt-auto pt-4 border-t border-white/[0.06]">

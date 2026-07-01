@@ -15,6 +15,28 @@ export const categories = ['All', 'Mobile', 'Web', 'AI'];
 
 export const projects = [
     {
+        title: 'Radiuz — Event Discovery & Community App',
+        slug: 'radiuz',
+        category: 'Mobile',
+        client: 'Nigeria',
+        role: 'Solo Developer',
+        liveUrl: 'https://play.google.com/store/apps/details?id=com.radiuz.app&pcampaignid=web_share',
+        liveLabel: 'Get it on Google Play',
+        coverImage: '/projects/radiuz/Gemini_Generated_Image_5nyz5nyz5nyz5nyz.png',
+        images: [
+            '/projects/radiuz/Gemini_Generated_Image_5nyz5nyz5nyz5nyz.png',
+            '/projects/radiuz/Gemini_Generated_Image_3nqsa33nqsa33nqs.png',
+            '/projects/radiuz/Gemini_Generated_Image_4ghll94ghll94ghl.png',
+            '/projects/radiuz/Gemini_Generated_Image_gnzoiqgnzoiqgnzo.png',
+            '/projects/radiuz/Gemini_Generated_Image_9pyn5w9pyn5w9pyn.png',
+        ],
+        description:
+            'A production-ready, cross-platform (iOS / Android / Web) event-discovery app built solo for a client in Nigeria using React Native, Expo, and TypeScript from a single codebase — live at radiuzapp.com and deployed to Google Play (com.radiuz.app) via EAS Build. Radiuz delivers a TikTok-style full-screen card feed of events happening near you, with radius-based geolocation discovery powered by Haversine distance and server-side bounding-box pre-filtering for efficient nearby-event queries. It is backed by a Supabase / PostgreSQL layer with Row-Level Security that powers auth, events, RSVPs, comments, likes, bookmarks, and reporting. Users can host public events or private events with age-range and gender-slot allocation (e.g. 5M / 5F) with slot-enforcement to prevent over-booking, RSVP with live "going" counts, and share events through deep links and universal links (radiuz://event/[id] and radiuzapp.com/event/[id]) with cold- and warm-start handling. Category auto-detection sorts events across Music, Food, Sports, Arts, Tech, Outdoors, and Social, while FlashList virtualization, Expo Image memory/disk caching, native-driver animations with a low-end-Android-safe path, and haptics deliver a polished, native-quality UX.',
+        tech: ['React Native', 'Expo', 'TypeScript', 'Supabase', 'PostgreSQL (RLS)', 'React Query', 'Deep Linking', 'EAS Build'],
+        gradient: 'from-indigo-600 to-orange-500',
+        color: '#2B1A8F',
+    },
+    {
         title: 'Premium React Native e-Signature App',
         slug: 'esign-app',
         category: 'Mobile',
@@ -180,17 +202,5 @@ export const projects = [
         tech: ['React Native', 'Video Processing', 'Async Logic', 'Performance Optimization'],
         gradient: 'from-blue-500 to-cyan-400',
         color: '#3b82f6',
-    },
-    {
-        title: 'Student Utility App',
-        slug: 'student-utility',
-        category: 'Mobile',
-        coverImage: card('1481627834876-b7833e8f5570'),
-        images: [wide('1481627834876-b7833e8f5570')],
-        description:
-            'A comprehensive Android helper application providing scheduling, notes management, and access to academic resources. Backed by Firebase for real-time data synchronization, it offers students a reliable hub for organizing their academic life — from managing timetables to storing lecture notes and sharing resources.',
-        tech: ['Android', 'Java', 'Firebase', 'Material Design'],
-        gradient: 'from-purple-500 to-pink-500',
-        color: '#a855f7',
     },
 ];
