@@ -184,6 +184,35 @@ function ProjectCard({ project, index, isInView, onOpen }) {
                         </span>
                     )}
                 </div>
+
+                {/* Live link — prominent CTA on the card itself */}
+                {project.liveUrl && (
+                    <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="group/live relative mt-4 inline-flex items-center justify-center gap-2 w-full h-10 px-4 rounded-xl text-[13px] font-semibold text-white overflow-hidden transition-transform duration-150 hover:scale-[1.02] active:scale-95"
+                        style={{
+                            background: `linear-gradient(135deg, ${project.color}, ${project.color}cc)`,
+                            boxShadow: `0 6px 20px ${project.color}55`,
+                        }}
+                        aria-label={`${project.liveLabel || 'View live'} — ${project.title}`}
+                    >
+                        {/* Shine sweep */}
+                        <span
+                            className="absolute inset-0 -translate-x-full group-hover/live:translate-x-full transition-transform duration-700 ease-out pointer-events-none"
+                            style={{ background: 'linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.35) 50%, transparent 80%)' }}
+                        />
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.6-9.7L3.6 2.3zm11 8.4 2.9-2.9-9-5.1a1 1 0 0 0-.4-.1l6.5 8.1zm0 2.6-6.5 8.1a1 1 0 0 0 .4-.1l9-5.1-2.9-2.9zm5.6-3.2-2.4-1.4-3.1 3.1 3.1 3.1 2.4-1.4a1.5 1.5 0 0 0 0-3.4z" />
+                        </svg>
+                        {project.liveLabel || 'View Live'}
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="opacity-80 transition-transform duration-150 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5">
+                            <path d="M7 17L17 7M7 7h10v10" />
+                        </svg>
+                    </a>
+                )}
             </div>
         </motion.article>
     );

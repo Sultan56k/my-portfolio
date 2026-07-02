@@ -84,8 +84,11 @@ export default function Footer() {
                         transition={{ duration: 8, repeat: Infinity }}
                     />
 
-                    {/* Content */}
-                    <div className="relative z-10 p-6 sm:p-8 md:p-14 lg:p-20 text-center">
+                    {/* Content — centered column, width-constrained so it stays
+                        balanced on wide desktop screens, not stretched edge-to-edge.
+                        `text-center` + `mx-auto` on each block guarantees centering
+                        regardless of parent layout. */}
+                    <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center text-center px-6 py-12 sm:px-10 sm:py-16 md:py-20 lg:py-24">
                         <motion.p
                             className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase mb-3 sm:mb-5"
                             style={{ color: 'var(--accent)' }}
@@ -97,7 +100,7 @@ export default function Footer() {
                         </motion.p>
 
                         <motion.h2
-                            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-5 leading-tight tracking-tight"
+                            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-5 leading-[1.1] tracking-tight text-balance"
                             style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -108,7 +111,7 @@ export default function Footer() {
                         </motion.h2>
 
                         <motion.p
-                            className="text-[#aeb0be] text-sm sm:text-base md:text-lg mb-6 sm:mb-10 max-w-md mx-auto leading-relaxed px-2"
+                            className="text-[#aeb0be] text-sm sm:text-base md:text-lg mb-8 sm:mb-10 max-w-md mx-auto leading-relaxed text-balance"
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ delay: 0.3 }}
@@ -117,14 +120,14 @@ export default function Footer() {
                         </motion.p>
 
                         <motion.div
-                            className="flex flex-col sm:flex-row gap-4 justify-center"
+                            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto"
                             initial={{ opacity: 0, y: 20 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ delay: 0.4 }}
                         >
                             <MagneticButton
                                 href="#contact"
-                                className="btn-primary gap-2"
+                                className="btn-primary gap-2 w-full sm:w-auto"
                                 onClick={(e) => handleAnchor(e, '#contact')}
                             >
                                 Start a Conversation
@@ -134,7 +137,7 @@ export default function Footer() {
                             </MagneticButton>
                             <MagneticButton
                                 href="mailto:244msultan@gmail.com"
-                                className="btn-secondary gap-2"
+                                className="btn-secondary gap-2 w-full sm:w-auto"
                             >
                                 Email Me
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
