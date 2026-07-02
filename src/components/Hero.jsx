@@ -64,117 +64,13 @@ function SplitText({ text, className, delay = 0, stagger = 0.03 }) {
     );
 }
 
-function FloatingCodeBlock() {
-    const codeLines = [
-        { text: 'const', color: '#c678dd' },
-        { text: ' developer', color: '#e5c07b' },
-        { text: ' = {', color: '#abb2bf' },
-    ];
-    const codeBody = [
-        { indent: '  ', key: 'stack', color: '#e06c75', value: '"RN + Expo"', valColor: '#98c379' },
-        { indent: '  ', key: 'focus', color: '#e06c75', value: '"mobile UX"', valColor: '#98c379' },
-        { indent: '  ', key: 'ships', color: '#e06c75', value: 'true', valColor: '#d19a66' },
-    ];
-
-    return (
-        <motion.div
-            className="absolute left-6 bottom-24 hidden xl:block"
-            initial={{ opacity: 0, x: -40, rotateY: 15 }}
-            animate={{ opacity: 1, x: 0, rotateY: 6 }}
-            transition={{ delay: 1.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        >
-            <motion.div
-                className="relative"
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            >
-                <div
-                    className="absolute -inset-4 rounded-2xl blur-xl"
-                    style={{ background: 'rgba(var(--accent-rgb), 0.18)' }}
-                />
-                <div className="relative bg-[#0d1117] border border-[#2a2a3a] rounded-xl p-4 font-mono text-sm shadow-2xl shadow-black/40 w-[240px]">
-                    <div className="flex gap-1.5 mb-3">
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-                    </div>
-                    <div className="space-y-1 text-[12px] leading-relaxed">
-                        <div>
-                            {codeLines.map((part, i) => (
-                                <span key={i} style={{ color: part.color }}>{part.text}</span>
-                            ))}
-                        </div>
-                        {codeBody.map((line, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 2 + i * 0.2 }}
-                            >
-                                <span className="text-[#abb2bf]">{line.indent}</span>
-                                <span style={{ color: line.color }}>{line.key}</span>
-                                <span className="text-[#abb2bf]">: </span>
-                                <span style={{ color: line.valColor }}>{line.value}</span>
-                                <span className="text-[#abb2bf]">,</span>
-                            </motion.div>
-                        ))}
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
-                            <span className="text-[#abb2bf]">{'};'}</span>
-                        </motion.div>
-                    </div>
-                </div>
-            </motion.div>
-        </motion.div>
-    );
-}
-
-function FloatingBadges() {
-    const badges = [
-        { text: 'React', x: -60, y: -40, delay: 1.8, color: '#61DAFB' },
-        { text: 'Mobile', x: 60, y: 30, delay: 2.1, color: '#a855f7' },
-        { text: 'UI/UX', x: -70, y: 50, delay: 2.4, color: '#22d3ee' },
-    ];
-
-    return (
-        <div className="absolute inset-0 pointer-events-none hidden md:block">
-            {badges.map((badge, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute left-1/2 top-1/2"
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{
-                        opacity: 0.6,
-                        scale: 1,
-                        x: badge.x + '%',
-                        y: badge.y + '%',
-                    }}
-                    transition={{ delay: badge.delay, duration: 0.6, type: 'spring' }}
-                >
-                    <motion.div
-                        animate={{ y: [0, -6, 0] }}
-                        transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut' }}
-                        className="px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur-sm"
-                        style={{
-                            backgroundColor: `${badge.color}10`,
-                            borderColor: `${badge.color}30`,
-                            color: badge.color,
-                        }}
-                    >
-                        {badge.text}
-                    </motion.div>
-                </motion.div>
-            ))}
-        </div>
-    );
-}
-
 export default function Hero() {
     const reduceMotion = useReducedMotion();
     const developmentTypes = [
-        'Full Stack Development',
-        'Frontend Development',
-        'Backend Development',
-        'Mobile Development',
+        'React web apps',
+        'React Native apps',
+        'clean, fast UI',
+        'user-centered design',
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -235,50 +131,15 @@ export default function Hero() {
             {/* Cursor-spotlight grid (desktop only — masked to cursor) */}
             <div className="hero-grid" aria-hidden="true" />
 
-            {/* Animated Background Blobs */}
+            {/* Single soft ambient glow — one calm light source, not three competing blobs. */}
             <div className="absolute inset-0 -z-10 overflow-hidden">
                 <motion.div
-                    className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full blur-[120px] animate-morph"
-                    style={{ background: 'rgba(var(--accent-rgb), 0.18)' }}
-                    animate={{ x: [0, 30, -20, 0], y: [0, -25, 15, 0] }}
-                    transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-                />
-                <motion.div
-                    className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px] animate-morph"
-                    style={{ background: 'rgba(var(--accent-3-rgb), 0.12)' }}
-                    animate={{ x: [0, -30, 20, 0], y: [0, 25, -15, 0] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-                />
-                <motion.div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[100px]"
-                    style={{ background: 'rgba(var(--accent-2-rgb), 0.1)' }}
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[620px] h-[620px] rounded-full blur-[130px]"
+                    style={{ background: 'rgba(var(--accent-rgb), 0.14)' }}
+                    animate={{ opacity: [0.55, 0.8, 0.55] }}
+                    transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
                 />
             </div>
-
-            <FloatingBadges />
-            <FloatingCodeBlock />
-
-            {/* Decorative dashed connector — diagonal toward the phone */}
-            <div
-                className="connector-line hidden lg:block"
-                style={{
-                    right: '8%',
-                    top: '38%',
-                    width: '14%',
-                    transform: 'rotate(18deg)',
-                }}
-            />
-            <div
-                className="connector-line hidden lg:block"
-                style={{
-                    left: '14%',
-                    top: '62%',
-                    width: '10%',
-                    transform: 'rotate(-22deg)',
-                }}
-            />
 
             {/* Phone mockup (desktop) */}
             <div className="absolute right-6 lg:right-10 xl:right-24 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
@@ -378,42 +239,26 @@ export default function Hero() {
                         </MagneticButton>
                     </motion.div>
 
-                    {/* Trusted By / Social Proof mini-bar */}
+                    {/* Focus rotator — one calm line, subordinate to the name. */}
                     <motion.div
                         variants={itemVariants}
-                        className="flex items-center gap-3 sm:gap-6 mt-6 sm:mt-8 opacity-50"
+                        className="mt-8 flex items-center justify-center gap-2.5 text-sm sm:text-base text-[#8a8a99]"
                     >
-                        <div className="h-[1px] w-6 sm:w-12 bg-[#2a2a3a]" />
-                        <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-[#71717a] tracking-wide uppercase">
-                            <span>React</span>
-                            <span className="w-1 h-1 rounded-full bg-[#2a2a3a]" />
-                            <span>React Native</span>
-                            <span className="w-1 h-1 rounded-full bg-[#2a2a3a]" />
-                            <span>TypeScript</span>
-                        </div>
-                        <div className="h-[1px] w-6 sm:w-12 bg-[#2a2a3a]" />
-                    </motion.div>
-
-                    {/* Animated Development Type Text */}
-                    <motion.div
-                        variants={itemVariants}
-                        className="mt-12 md:mt-16 lg:mt-20"
-                    >
-                        <p className="text-xs tracking-[0.2em] uppercase text-[#71717a] mb-4">What I Do</p>
-                        <div className="relative h-12 sm:h-16 md:h-20 lg:h-24 flex items-center justify-center">
+                        <span className="tracking-wide">Focused on</span>
+                        <span className="relative inline-flex h-6 sm:h-7 min-w-[190px] sm:min-w-[230px] items-center justify-start overflow-hidden">
                             <AnimatePresence mode="wait">
                                 <motion.span
                                     key={currentIndex}
-                                    initial={{ opacity: 0, y: 30, filter: 'blur(12px)', scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
-                                    exit={{ opacity: 0, y: -30, filter: 'blur(12px)', scale: 0.95 }}
-                                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                                    className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold gradient-text text-center absolute whitespace-nowrap"
+                                    initial={{ opacity: 0, y: 16 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -16 }}
+                                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                    className="absolute left-0 whitespace-nowrap font-semibold text-white"
                                 >
                                     {developmentTypes[currentIndex]}
                                 </motion.span>
                             </AnimatePresence>
-                        </div>
+                        </span>
                     </motion.div>
                 </div>
             </motion.div>

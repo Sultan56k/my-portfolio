@@ -8,9 +8,11 @@ export default function ParticleField() {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
+        // Respect reduced-motion: skip the whole field.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
         let animationId;
         let particles = [];
-        let mouse = { x: -1000, y: -1000 };
 
         const resize = () => {
             canvas.width = window.innerWidth;
@@ -19,7 +21,8 @@ export default function ParticleField() {
         resize();
         window.addEventListener('resize', resize);
 
-        const colors = ['#6366f1', '#a855f7', '#22d3ee'];
+        // Single restrained accent — no rainbow of dots.
+        const dotColor = '#6366f1';
 
         class Particle {
             constructor() {
@@ -28,24 +31,15 @@ export default function ParticleField() {
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.4;
-                this.speedY = (Math.random() - 0.5) * 0.4;
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.opacity = Math.random() * 0.5 + 0.1;
+                this.size = Math.random() * 1.4 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 0.18;
+                this.speedY = (Math.random() - 0.5) * 0.18;
+                this.color = dotColor;
+                this.opacity = Math.random() * 0.28 + 0.06;
             }
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-
-                const dx = mouse.x - this.x;
-                const dy = mouse.y - this.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
-                    const force = (120 - dist) / 120;
-                    this.x -= dx * force * 0.02;
-                    this.y -= dy * force * 0.02;
-                }
 
                 if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
                 if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
@@ -60,7 +54,7 @@ export default function ParticleField() {
             }
         }
 
-        const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 15000), 80);
+        const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 42000), 34);
         for (let i = 0; i < particleCount; i++) {
             particles.push(new Particle());
         }
@@ -71,10 +65,10 @@ export default function ParticleField() {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 150) {
+                    if (dist < 130) {
                         ctx.beginPath();
-                        ctx.strokeStyle = '#6366f1';
-                        ctx.globalAlpha = (1 - dist / 150) * 0.08;
+                        ctx.strokeStyle = dotColor;
+                        ctx.globalAlpha = (1 - dist / 130) * 0.04;
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
@@ -95,26 +89,19 @@ export default function ParticleField() {
             animationId = requestAnimationFrame(animate);
         };
 
-        const handleMouse = (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        };
-
-        window.addEventListener('mousemove', handleMouse);
         animate();
 
         return () => {
             cancelAnimationFrame(animationId);
             window.removeEventListener('resize', resize);
-            window.removeEventListener('mousemove', handleMouse);
         };
     }, []);
 
     return (
         <canvas
             ref={canvasRef}
-            className="fixed inset-0 z-0 pointer-events-none"
-            style={{ opacity: 0.6 }}
+            className="fixed inset-0 z-0 pointer-events-none hidden md:block"
+            style={{ opacity: 0.45 }}
         />
     );
 }

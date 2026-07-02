@@ -63,15 +63,7 @@ function Site() {
                 <Suspense fallback={<SectionFallback />}>
                     <Experience />
                 </Suspense>
-                <MarqueeBand
-                    items={[
-                        'Crafting Digital Experiences',
-                        'Pixel-perfect UI',
-                        'Animated Interfaces',
-                        'Production-grade apps',
-                    ]}
-                    accentIndex={2}
-                />
+                <SectionDivider />
                 <Suspense fallback={<SectionFallback />}>
                     <Testimonials />
                 </Suspense>
