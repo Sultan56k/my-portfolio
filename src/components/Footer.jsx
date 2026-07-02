@@ -52,12 +52,12 @@ export default function Footer() {
     return (
         <footer className="relative">
             {/* CTA Banner */}
-            <div className="py-10 sm:py-16 md:py-24 px-4 sm:px-8 lg:px-12" ref={ctaRef}>
+            <div className="py-10 sm:py-16 md:py-24 px-4 sm:px-8 lg:px-12 flex justify-center" ref={ctaRef}>
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative overflow-hidden rounded-2xl max-w-[1200px] mx-auto"
+                    className="relative overflow-hidden rounded-2xl max-w-[1200px] w-full"
                 >
                     {/* Solid background + gradient overlay */}
                     <div className="absolute inset-0 bg-[#13131a] rounded-2xl" />
@@ -88,7 +88,7 @@ export default function Footer() {
                         balanced on wide desktop screens, not stretched edge-to-edge.
                         `text-center` + `mx-auto` on each block guarantees centering
                         regardless of parent layout. */}
-                    <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center text-center px-6 py-12 sm:px-10 sm:py-16 md:py-20 lg:py-24">
+                    <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center px-6 py-12 sm:px-10 sm:py-16 md:py-20 lg:py-24">
                         <motion.p
                             className="text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase mb-3 sm:mb-5"
                             style={{ color: 'var(--accent)' }}
